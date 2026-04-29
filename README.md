@@ -1,6 +1,12 @@
 # taiki-e/install-action
 
-Hardened GitHub Action by [Chainguard](https://www.chainguard.dev).
+Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/taiki-e/install-action](https://github.com/taiki-e/install-action).
+
+## Versions
+
+| Version | Tag | Upstream commit |
+|---------|-----|-----------------|
+| v2.68.32 | [`v2.68.32`](https://github.com/chainguard-actions/install-action/tree/v2.68.32) | — |
 
 ## Privacy
 
