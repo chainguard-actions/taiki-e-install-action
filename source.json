@@ -1,4 +1,6 @@
 {
-  "upstream": "taiki-e/install-action",
-  "version": "v2.68.32"
+  "owner": "taiki-e",
+  "repo": "install-action",
+  "version": "",
+  "url": "https://github.com/taiki-e/install-action"
 }
