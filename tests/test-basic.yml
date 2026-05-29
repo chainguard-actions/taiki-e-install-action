@@ -10,12 +10,15 @@ jobs:
         uses: .
         with:
           tool: jq
+          checksum: 'true'
+          fallback: 'cargo-binstall'
       - name: Assert jq is installed
         run: |
-          echo "Checking jq is available..."
+          echo "Checking jq installation..."
           if ! command -v jq > /dev/null 2>&1; then
-            echo "FAIL: jq was not installed"
+            echo "FAIL: jq was not found in PATH"
             exit 1
           fi
-          echo "PASS: jq is installed"
-          jq --version
+          JQ_VERSION=$(jq --version)
+          echo "actual: $JQ_VERSION"
+          echo "PASS: jq is installed: $JQ_VERSION"
