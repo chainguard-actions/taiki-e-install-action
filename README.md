@@ -1,6 +1,6 @@
 # taiki-e/install-action
 
-GitHub Action for installing development tools (mainly from GitHub Releases).
+GitHub Action for installing development tools
 
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/taiki-e/install-action](https://github.com/taiki-e/install-action).
 
