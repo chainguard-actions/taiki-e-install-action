@@ -1,0 +1,22 @@
+name: Test basic tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: jq
+      - name: Assert jq is installed
+        run: |
+          echo "Checking jq is available..."
+          if ! command -v jq > /dev/null 2>&1; then
+            echo "FAIL: jq was not installed"
+            exit 1
+          fi
+          JQ_VERSION=$(jq --version)
+          echo "jq version: $JQ_VERSION"
+          echo "PASS: jq is installed"
