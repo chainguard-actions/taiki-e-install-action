@@ -10,12 +10,14 @@ jobs:
         uses: .
         with:
           tool: ripgrep
+          checksum: 'true'
+          fallback: 'cargo-binstall'
       - name: Assert ripgrep is installed
         run: |
-          echo "Checking if ripgrep is installed..."
+          echo "Checking if rg is available..."
           if ! command -v rg > /dev/null 2>&1; then
-            echo "FAIL: ripgrep (rg) was not found in PATH"
+            echo "FAIL: rg (ripgrep) was not found in PATH"
             exit 1
           fi
-          echo "PASS: ripgrep is installed at $(command -v rg)"
-          rg --version
+          echo "rg version: $(rg --version)"
+          echo "PASS: ripgrep is installed"
