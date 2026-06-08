@@ -12,10 +12,11 @@ jobs:
           tool: jq
       - name: Assert jq is installed
         run: |
-          echo "Checking jq is available..."
+          echo "Checking jq is installed..."
           if ! command -v jq > /dev/null 2>&1; then
-            echo "FAIL: jq was not installed"
+            echo "FAIL: jq was not found in PATH"
             exit 1
           fi
+          JQ_VERSION=$(jq --version)
+          echo "jq version: $JQ_VERSION"
           echo "PASS: jq is installed"
-          jq --version
