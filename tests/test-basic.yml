@@ -9,13 +9,13 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: ripgrep
-      - name: Assert ripgrep is installed
+          tool: jq
+      - name: Assert jq is installed
         run: |
-          echo "Checking if rg is available..."
-          if ! command -v rg > /dev/null 2>&1; then
-            echo "FAIL: rg (ripgrep) was not found in PATH"
+          echo "Checking jq is available..."
+          if ! command -v jq > /dev/null 2>&1; then
+            echo "FAIL: jq was not installed"
             exit 1
           fi
-          echo "rg version: $(rg --version)"
-          echo "PASS: ripgrep is installed"
+          echo "PASS: jq is installed"
+          jq --version
