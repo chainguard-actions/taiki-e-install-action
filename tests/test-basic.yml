@@ -17,5 +17,5 @@ jobs:
             echo "FAIL: jq was not installed"
             exit 1
           fi
-          echo "PASS: jq is installed"
+          echo "PASS: jq is installed at $(command -v jq)"
           jq --version
