@@ -10,8 +10,6 @@ jobs:
         uses: .
         with:
           tool: jq
-          checksum: 'true'
-          fallback: 'none'
       - name: Assert jq is installed
         run: |
           echo "Checking jq is available..."
