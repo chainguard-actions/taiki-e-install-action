@@ -10,11 +10,9 @@ jobs:
         uses: .
         with:
           tool: jq
-          checksum: 'true'
-          fallback: 'none'
-      - name: Assert jq is installed
+      - name: Assert tool is installed
         run: |
-          echo "Checking jq is available..."
+          echo "Checking if jq is installed..."
           if ! command -v jq > /dev/null 2>&1; then
             echo "FAIL: jq was not installed"
             exit 1
