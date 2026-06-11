@@ -4,7 +4,7 @@
   "version": "v2.81.3",
   "commit_sha": "25435dc8dd3baed7417e0c96d3fe89013a5b2e09",
   "url": "https://github.com/taiki-e/install-action",
-  "policy_sha": "ff50f15e4b79bfbf764dafdfd2579175a6ea9771",
+  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
   "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
   "test_agent_version": "1",
   "harden_agent_version": "1"
