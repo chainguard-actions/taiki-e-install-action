@@ -1,0 +1,30 @@
+name: Test multiple tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: ripgrep,fd-find
+      - name: Assert ripgrep is installed
+        run: |
+          echo "Checking if rg is available..."
+          if ! command -v rg > /dev/null 2>&1; then
+            echo "FAIL: rg (ripgrep) was not found in PATH"
+            exit 1
+          fi
+          echo "rg version: $(rg --version)"
+          echo "PASS: ripgrep installed successfully"
+      - name: Assert fd is installed
+        run: |
+          echo "Checking if fd is available..."
+          if ! command -v fd > /dev/null 2>&1; then
+            echo "FAIL: fd was not found in PATH"
+            exit 1
+          fi
+          echo "fd version: $(fd --version)"
+          echo "PASS: fd installed successfully"
