@@ -1,0 +1,30 @@
+name: Test multiple tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: just,shfmt
+      - name: Assert just is installed
+        run: |
+          echo "Checking just installation..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "FAIL: just not found in PATH"
+            exit 1
+          fi
+          echo "just version: $(just --version)"
+          echo "PASS: just is installed"
+      - name: Assert shfmt is installed
+        run: |
+          echo "Checking shfmt installation..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found in PATH"
+            exit 1
+          fi
+          echo "shfmt version: $(shfmt --version)"
+          echo "PASS: shfmt is installed"
