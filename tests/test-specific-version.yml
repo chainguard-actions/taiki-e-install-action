@@ -1,4 +1,4 @@
-name: Test installation with checksum disabled
+name: Test specific version installation
 on:
   workflow_dispatch:
 jobs:
@@ -9,19 +9,18 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: shfmt
-          checksum: 'false'
-      - name: Assert shfmt is installed even without checksum verification
+          tool: shfmt@3.13.0
+      - name: Assert shfmt 3.13.0 is installed
         run: |
-          echo "Checking shfmt installation (checksum disabled)..."
+          echo "Checking shfmt version..."
           if ! command -v shfmt > /dev/null 2>&1; then
             echo "FAIL: shfmt not found in PATH"
             exit 1
           fi
           SHFMT_VERSION=$(shfmt --version 2>&1)
           echo "shfmt version: $SHFMT_VERSION"
-          if [ -z "$SHFMT_VERSION" ]; then
-            echo "FAIL: shfmt --version returned empty"
+          if [ "$SHFMT_VERSION" != "v3.13.0" ]; then
+            echo "FAIL: expected v3.13.0, got $SHFMT_VERSION"
             exit 1
           fi
-          echo "PASS: shfmt is installed with checksum disabled"
+          echo "PASS: shfmt 3.13.0 is installed"

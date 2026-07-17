@@ -1,4 +1,4 @@
-name: Test installation with checksum disabled
+name: Test basic tool installation
 on:
   workflow_dispatch:
 jobs:
@@ -10,10 +10,9 @@ jobs:
         uses: .
         with:
           tool: shfmt
-          checksum: 'false'
-      - name: Assert shfmt is installed even without checksum verification
+      - name: Assert shfmt is installed and functional
         run: |
-          echo "Checking shfmt installation (checksum disabled)..."
+          echo "Checking shfmt installation..."
           if ! command -v shfmt > /dev/null 2>&1; then
             echo "FAIL: shfmt not found in PATH"
             exit 1
@@ -24,4 +23,4 @@ jobs:
             echo "FAIL: shfmt --version returned empty"
             exit 1
           fi
-          echo "PASS: shfmt is installed with checksum disabled"
+          echo "PASS: shfmt is installed and functional"
