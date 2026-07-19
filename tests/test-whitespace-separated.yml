@@ -1,4 +1,4 @@
-name: Test multiple tool installation
+name: Test whitespace-separated tool list
 on:
   workflow_dispatch:
 jobs:
@@ -9,7 +9,9 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: shellcheck,shfmt
+          tool: |
+            shellcheck
+            shfmt
           checksum: 'true'
           fallback: 'none'
       - name: Assert shellcheck is installed

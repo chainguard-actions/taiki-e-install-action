@@ -1,4 +1,4 @@
-name: Test installation with fallback disabled
+name: Test fallback none mode
 on:
   workflow_dispatch:
 jobs:
@@ -9,14 +9,20 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: shellcheck
+          tool: shfmt
+          checksum: 'true'
           fallback: 'none'
-      - name: Assert shellcheck is installed with fallback=none
+      - name: Assert shfmt is installed
         run: |
-          echo "Checking if shellcheck is available..."
-          if ! command -v shellcheck > /dev/null 2>&1; then
-            echo "FAIL: shellcheck not found in PATH"
+          echo "Checking shfmt is available..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found in PATH"
             exit 1
           fi
-          echo "shellcheck version: $(shellcheck --version)"
-          echo "PASS: shellcheck installed successfully with fallback=none"
+          VERSION=$(shfmt --version 2>&1)
+          echo "actual version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: shfmt version returned empty"
+            exit 1
+          fi
+          echo "PASS: shfmt installed successfully: $VERSION"

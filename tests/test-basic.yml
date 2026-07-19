@@ -9,13 +9,20 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: just
-      - name: Assert just is installed
+          tool: shellcheck
+          checksum: 'true'
+          fallback: 'none'
+      - name: Assert shellcheck is installed and functional
         run: |
-          echo "Checking if just is available..."
-          if ! command -v just > /dev/null 2>&1; then
-            echo "FAIL: just not found in PATH"
+          echo "Checking shellcheck is available..."
+          if ! command -v shellcheck > /dev/null 2>&1; then
+            echo "FAIL: shellcheck not found in PATH"
             exit 1
           fi
-          echo "just version: $(just --version)"
-          echo "PASS: just installed successfully"
+          VERSION=$(shellcheck --version | grep 'version:' | awk '{print $2}')
+          echo "actual: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: shellcheck --version returned empty"
+            exit 1
+          fi
+          echo "PASS: shellcheck installed successfully: $VERSION"

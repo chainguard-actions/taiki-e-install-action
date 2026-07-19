@@ -9,18 +9,20 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: just@1.55.0
-      - name: Assert just specific version is installed
+          tool: shellcheck@0.10.0
+          checksum: 'true'
+          fallback: 'none'
+      - name: Assert shellcheck specific version is installed
         run: |
-          echo "Checking if just is available..."
-          if ! command -v just > /dev/null 2>&1; then
-            echo "FAIL: just not found in PATH"
+          echo "Checking shellcheck is available..."
+          if ! command -v shellcheck > /dev/null 2>&1; then
+            echo "FAIL: shellcheck not found in PATH"
             exit 1
           fi
-          VERSION="$(just --version)"
-          echo "just version: $VERSION"
-          if ! echo "$VERSION" | grep -q "1.55.0"; then
-            echo "FAIL: expected version 1.55.0 but got: $VERSION"
+          VERSION=$(shellcheck --version | grep 'version:' | awk '{print $2}')
+          echo "actual: $VERSION"
+          if [ "$VERSION" != "0.10.0" ]; then
+            echo "FAIL: expected 0.10.0 but got $VERSION"
             exit 1
           fi
-          echo "PASS: just 1.55.0 installed successfully"
+          echo "PASS: shellcheck 0.10.0 installed successfully"
