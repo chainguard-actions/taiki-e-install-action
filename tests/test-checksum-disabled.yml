@@ -1,4 +1,4 @@
-name: Test multiple tool installation
+name: Test installation with checksum disabled
 on:
   workflow_dispatch:
 jobs:
@@ -6,11 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Install multiple tools
+      - name: Install shfmt with checksum disabled
         id: action
         uses: .
         with:
-          tool: shfmt,typos
+          tool: shfmt
+          checksum: 'false'
       - name: Assert shfmt is installed
         run: |
           echo "Checking shfmt is available..."
@@ -19,13 +20,4 @@ jobs:
             exit 1
           fi
           echo "shfmt version: $(shfmt --version)"
-          echo "PASS: shfmt is installed"
-      - name: Assert typos is installed
-        run: |
-          echo "Checking typos is available..."
-          if ! command -v typos > /dev/null 2>&1; then
-            echo "FAIL: typos not found in PATH"
-            exit 1
-          fi
-          echo "typos version: $(typos --version)"
-          echo "PASS: typos is installed"
+          echo "PASS: shfmt installed successfully with checksum disabled"

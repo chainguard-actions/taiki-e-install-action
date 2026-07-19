@@ -6,29 +6,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Install tools using whitespace-separated list
+        id: action
         uses: .
         with:
           tool: |
-            shellcheck
             shfmt
-      - name: Assert shellcheck is installed
-        run: |
-          echo "Checking if shellcheck is installed..."
-          if ! command -v shellcheck > /dev/null 2>&1; then
-            echo "FAIL: shellcheck was not found in PATH"
-            exit 1
-          fi
-          SC_VERSION=$(shellcheck --version | grep 'version:' | awk '{print $2}')
-          echo "shellcheck version: $SC_VERSION"
-          echo "PASS: shellcheck is installed"
+            typos
       - name: Assert shfmt is installed
         run: |
-          echo "Checking if shfmt is installed..."
+          echo "Checking shfmt is available..."
           if ! command -v shfmt > /dev/null 2>&1; then
-            echo "FAIL: shfmt was not found in PATH"
+            echo "FAIL: shfmt not found in PATH"
             exit 1
           fi
-          SHFMT_VERSION=$(shfmt --version)
-          echo "shfmt version: $SHFMT_VERSION"
+          echo "shfmt version: $(shfmt --version)"
           echo "PASS: shfmt is installed"
+      - name: Assert typos is installed
+        run: |
+          echo "Checking typos is available..."
+          if ! command -v typos > /dev/null 2>&1; then
+            echo "FAIL: typos not found in PATH"
+            exit 1
+          fi
+          echo "typos version: $(typos --version)"
+          echo "PASS: typos is installed"
