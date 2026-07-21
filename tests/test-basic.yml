@@ -6,16 +6,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Install shfmt via action
+        id: install
         uses: .
         with:
-          tool: just
-      - name: Assert just is installed
+          tool: shfmt
+      - name: Assert shfmt is installed and executable
         run: |
-          echo "Checking just installation..."
-          if ! command -v just > /dev/null 2>&1; then
-            echo "FAIL: just not found in PATH"
+          echo "Checking shfmt is available..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found in PATH"
             exit 1
           fi
-          echo "just version: $(just --version)"
-          echo "PASS: just is installed"
+          SHFMT_VERSION=$(shfmt --version 2>&1)
+          echo "shfmt version: $SHFMT_VERSION"
+          if [ -z "$SHFMT_VERSION" ]; then
+            echo "FAIL: shfmt --version returned empty"
+            exit 1
+          fi
+          echo "PASS: shfmt is installed"

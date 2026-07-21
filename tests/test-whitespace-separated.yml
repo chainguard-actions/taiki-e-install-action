@@ -1,4 +1,4 @@
-name: Test multiple tool installation
+name: Test whitespace-separated tool list
 on:
   workflow_dispatch:
 jobs:
@@ -6,11 +6,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Install multiple tools via action
+      - name: Install tools using whitespace-separated list
         id: install
         uses: .
         with:
-          tool: shfmt,just
+          tool: |
+            shfmt
+            just
       - name: Assert shfmt is installed
         run: |
           echo "Checking shfmt is available..."
@@ -18,8 +20,7 @@ jobs:
             echo "FAIL: shfmt not found in PATH"
             exit 1
           fi
-          SHFMT_VERSION=$(shfmt --version 2>&1)
-          echo "shfmt version: $SHFMT_VERSION"
+          echo "shfmt version: $(shfmt --version)"
           echo "PASS: shfmt is installed"
       - name: Assert just is installed
         run: |
@@ -28,6 +29,5 @@ jobs:
             echo "FAIL: just not found in PATH"
             exit 1
           fi
-          JUST_VERSION=$(just --version 2>&1)
-          echo "just version: $JUST_VERSION"
+          echo "just version: $(just --version)"
           echo "PASS: just is installed"

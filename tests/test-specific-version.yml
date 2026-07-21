@@ -1,4 +1,4 @@
-name: Test fallback none option
+name: Test specific version installation
 on:
   workflow_dispatch:
 jobs:
@@ -6,13 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Install just with fallback disabled
+      - name: Install specific version of just
         id: install
         uses: .
         with:
-          tool: just
-          fallback: none
-      - name: Assert just is installed even without fallback
+          tool: just@1.50.0
+      - name: Assert just 1.50.0 is installed
         run: |
           echo "Checking just is available..."
           if ! command -v just > /dev/null 2>&1; then
@@ -21,4 +20,9 @@ jobs:
           fi
           JUST_VERSION=$(just --version 2>&1)
           echo "just version: $JUST_VERSION"
-          echo "PASS: just is installed with fallback=none"
+          if echo "$JUST_VERSION" | grep -q "1.50.0"; then
+            echo "PASS: just 1.50.0 is installed"
+          else
+            echo "FAIL: expected just 1.50.0 but got: $JUST_VERSION"
+            exit 1
+          fi
