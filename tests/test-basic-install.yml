@@ -1,0 +1,29 @@
+name: Test basic tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install just via action
+        id: action
+        uses: .
+        with:
+          tool: just
+          checksum: 'true'
+          fallback: 'none'
+      - name: Assert just is installed and runnable
+        run: |
+          echo "Checking just is on PATH..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "FAIL: just not found on PATH"
+            exit 1
+          fi
+          VERSION=$(just --version | head -1)
+          echo "actual: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: just --version returned empty"
+            exit 1
+          fi
+          echo "PASS: just installed: $VERSION"

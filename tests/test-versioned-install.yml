@@ -1,0 +1,29 @@
+name: Test versioned tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install specific version of just
+        id: action
+        uses: .
+        with:
+          tool: just@1.36.0
+          checksum: 'true'
+          fallback: 'none'
+      - name: Assert correct version of just is installed
+        run: |
+          echo "Checking just version..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "FAIL: just not found on PATH"
+            exit 1
+          fi
+          VERSION=$(just --version | head -1)
+          echo "actual: $VERSION"
+          if ! echo "$VERSION" | grep -q '1.36.0'; then
+            echo "FAIL: expected version 1.36.0 but got: $VERSION"
+            exit 1
+          fi
+          echo "PASS: correct version installed: $VERSION"
