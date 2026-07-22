@@ -1,0 +1,33 @@
+name: Test installing a specific tool version
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: shfmt@3.13.1
+      - name: Assert shfmt is installed with correct version
+        run: |
+          echo "Checking if shfmt is available..."
+          SHFMT_BIN=""
+          if command -v shfmt > /dev/null 2>&1; then
+            SHFMT_BIN="shfmt"
+          elif [ -f "${HOME}/.install-action/bin/shfmt" ]; then
+            SHFMT_BIN="${HOME}/.install-action/bin/shfmt"
+          fi
+          if [ -z "${SHFMT_BIN}" ]; then
+            echo "FAIL: shfmt not found in PATH or install-action bin dir"
+            ls -la "${HOME}/.install-action/bin" 2>/dev/null || echo "bin dir does not exist"
+            exit 1
+          fi
+          SHFMT_VERSION="$("${SHFMT_BIN}" --version)"
+          echo "shfmt version: ${SHFMT_VERSION}"
+          if ! echo "${SHFMT_VERSION}" | grep -q "3.13.1"; then
+            echo "FAIL: expected shfmt version 3.13.1, got: ${SHFMT_VERSION}"
+            exit 1
+          fi
+          echo "PASS: shfmt 3.13.1 installed successfully"

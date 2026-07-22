@@ -1,0 +1,32 @@
+name: Test tool installation with fallback disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: shfmt
+          fallback: 'none'
+      - name: Assert shfmt is installed without fallback
+        run: |
+          echo "Checking if shfmt is available (installed with fallback=none)..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "shfmt not in PATH, checking install-action bin dir..."
+            INSTALL_BIN="${HOME}/.install-action/bin"
+            if [ -f "${INSTALL_BIN}/shfmt" ]; then
+              echo "shfmt found at ${INSTALL_BIN}/shfmt"
+              "${INSTALL_BIN}/shfmt" --version
+              echo "PASS: shfmt installed successfully with fallback=none"
+            else
+              echo "FAIL: shfmt not found in PATH or install-action bin dir"
+              ls -la "${INSTALL_BIN}" 2>/dev/null || echo "bin dir does not exist"
+              exit 1
+            fi
+          else
+            echo "shfmt version: $(shfmt --version)"
+            echo "PASS: shfmt installed successfully with fallback=none"
+          fi

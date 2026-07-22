@@ -1,0 +1,56 @@
+name: Test installing multiple tools
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: shfmt,just
+      - name: Assert shfmt is installed
+        run: |
+          echo "Checking if shfmt is available..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "shfmt not in PATH, checking install-action bin dir..."
+            INSTALL_BIN="${HOME}/.install-action/bin"
+            if [ -f "${INSTALL_BIN}/shfmt" ]; then
+              echo "shfmt found at ${INSTALL_BIN}/shfmt"
+              "${INSTALL_BIN}/shfmt" --version
+              echo "PASS: shfmt installed successfully"
+            else
+              echo "FAIL: shfmt not found in PATH or install-action bin dir"
+              ls -la "${INSTALL_BIN}" 2>/dev/null || echo "bin dir does not exist"
+              exit 1
+            fi
+          else
+            echo "shfmt version: $(shfmt --version)"
+            echo "PASS: shfmt installed successfully"
+          fi
+      - name: Assert just is installed
+        run: |
+          echo "Checking if just is available..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "just not in PATH, checking install-action bin dir and cargo bin..."
+            INSTALL_BIN="${HOME}/.install-action/bin"
+            CARGO_BIN="${HOME}/.cargo/bin"
+            if [ -f "${INSTALL_BIN}/just" ]; then
+              echo "just found at ${INSTALL_BIN}/just"
+              "${INSTALL_BIN}/just" --version
+              echo "PASS: just installed successfully"
+            elif [ -f "${CARGO_BIN}/just" ]; then
+              echo "just found at ${CARGO_BIN}/just"
+              "${CARGO_BIN}/just" --version
+              echo "PASS: just installed successfully"
+            else
+              echo "FAIL: just not found in PATH, install-action bin dir, or cargo bin"
+              ls -la "${INSTALL_BIN}" 2>/dev/null || echo "install-action bin dir does not exist"
+              ls -la "${CARGO_BIN}" 2>/dev/null || echo "cargo bin dir does not exist"
+              exit 1
+            fi
+          else
+            echo "just version: $(just --version)"
+            echo "PASS: just installed successfully"
+          fi
