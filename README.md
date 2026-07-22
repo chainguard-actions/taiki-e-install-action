@@ -36,6 +36,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v2.83.2 | [`v2.83.2`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.83.2) | [`43aecc8`](https://github.com/taiki-e/install-action/commit/43aecc8d72668fbcfe75c31400bc4f890f1c5853) |
 | v2.83.4 | [`v2.83.4`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.83.4) | [`07b4745`](https://github.com/taiki-e/install-action/commit/07b4745e0c39a41822af610387492e3e53aa222b) |
 | v2.84.0 | [`v2.84.0`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.84.0) | [`a6b2e2d`](https://github.com/taiki-e/install-action/commit/a6b2e2dcd845ddd7f509ce4f3ed3d922b80cc5d9) |
+| v2.84.1 | [`v2.84.1`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.84.1) | [`c44f6b0`](https://github.com/taiki-e/install-action/commit/c44f6b046f1c29ae5918b1e0bfdbb2f1813836fd) |
 
 ## Privacy
 
