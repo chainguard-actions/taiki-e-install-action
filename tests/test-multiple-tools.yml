@@ -6,27 +6,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Install multiple tools using the action
+        id: action
         uses: .
         with:
-          tool: shellcheck,shfmt
-      - name: Assert shellcheck is installed
-        run: |
-          echo "Checking shellcheck installation..."
-          if ! command -v shellcheck > /dev/null 2>&1; then
-            echo "FAIL: shellcheck was not found in PATH"
-            exit 1
-          fi
-          SC_VERSION=$(shellcheck --version | head -2 | tail -1)
-          echo "actual shellcheck: $SC_VERSION"
-          echo "PASS: shellcheck is installed"
+          tool: shfmt,hyperfine
       - name: Assert shfmt is installed
         run: |
           echo "Checking shfmt installation..."
           if ! command -v shfmt > /dev/null 2>&1; then
-            echo "FAIL: shfmt was not found in PATH"
+            echo "FAIL: shfmt command not found after installation"
             exit 1
           fi
-          SHFMT_VERSION=$(shfmt --version)
+          SHFMT_VERSION=$(shfmt --version | head -1)
           echo "actual shfmt: $SHFMT_VERSION"
-          echo "PASS: shfmt is installed"
+          echo "PASS: shfmt installed"
+      - name: Assert hyperfine is installed
+        run: |
+          echo "Checking hyperfine installation..."
+          if ! command -v hyperfine > /dev/null 2>&1; then
+            echo "FAIL: hyperfine command not found after installation"
+            exit 1
+          fi
+          HF_VERSION=$(hyperfine --version | head -1)
+          echo "actual hyperfine: $HF_VERSION"
+          echo "PASS: hyperfine installed"

@@ -1,4 +1,4 @@
-name: Test basic tool installation
+name: Test versioned tool installation
 on:
   workflow_dispatch:
 jobs:
@@ -6,22 +6,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Install shfmt using the action
+      - name: Install a specific version of shfmt
         id: action
         uses: .
         with:
-          tool: shfmt
-      - name: Assert shfmt is installed and runnable
+          tool: shfmt@3.13.1
+      - name: Assert shfmt version matches
         run: |
-          echo "Checking shfmt installation..."
+          echo "Checking shfmt version..."
           if ! command -v shfmt > /dev/null 2>&1; then
             echo "FAIL: shfmt command not found after installation"
             exit 1
           fi
           SHFMT_VERSION=$(shfmt --version | head -1)
           echo "actual: $SHFMT_VERSION"
-          if [ -z "$SHFMT_VERSION" ]; then
-            echo "FAIL: shfmt --version returned empty output"
+          if echo "$SHFMT_VERSION" | grep -q "3.13.1"; then
+            echo "PASS: shfmt 3.13.1 installed correctly"
+          else
+            echo "FAIL: expected version 3.13.1 but got: $SHFMT_VERSION"
             exit 1
           fi
-          echo "PASS: shfmt installed successfully: $SHFMT_VERSION"

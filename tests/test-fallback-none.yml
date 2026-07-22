@@ -6,18 +6,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Install shfmt with fallback disabled
+        id: action
         uses: .
         with:
           tool: shfmt
-          fallback: 'none'
-      - name: Assert shfmt is installed with fallback disabled
+          fallback: none
+      - name: Assert shfmt is installed
         run: |
-          echo "Checking shfmt installation (fallback=none)..."
+          echo "Checking shfmt installation with fallback=none..."
           if ! command -v shfmt > /dev/null 2>&1; then
-            echo "FAIL: shfmt was not found in PATH"
+            echo "FAIL: shfmt command not found after installation"
             exit 1
           fi
-          SHFMT_VERSION=$(shfmt --version)
+          SHFMT_VERSION=$(shfmt --version | head -1)
           echo "actual: $SHFMT_VERSION"
-          echo "PASS: shfmt is installed with fallback=none: $SHFMT_VERSION"
+          if [ -z "$SHFMT_VERSION" ]; then
+            echo "FAIL: shfmt --version returned empty output"
+            exit 1
+          fi
+          echo "PASS: shfmt installed successfully with fallback=none: $SHFMT_VERSION"
