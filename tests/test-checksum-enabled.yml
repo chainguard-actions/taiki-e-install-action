@@ -1,4 +1,4 @@
-name: Test checksum enabled (default)
+name: Test installation with checksum verification
 on:
   workflow_dispatch:
 jobs:
@@ -6,18 +6,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Install tool with checksum verification enabled (default)
+        id: action
         uses: .
         with:
           tool: shfmt
           checksum: 'true'
       - name: Assert shfmt is installed with checksum verification
         run: |
-          echo "Checking shfmt installation with checksum enabled..."
+          echo "Checking shfmt installation with checksum verification..."
           if ! command -v shfmt > /dev/null 2>&1; then
-            echo "FAIL: shfmt was not found in PATH"
+            echo "FAIL: shfmt not found in PATH after checksum-verified install"
             exit 1
           fi
-          SHFMT_VERSION=$(shfmt --version)
-          echo "actual: $SHFMT_VERSION"
-          echo "PASS: shfmt installed successfully with checksum verification: $SHFMT_VERSION"
+          SHFMT_VERSION=$(shfmt --version 2>&1)
+          echo "shfmt version: $SHFMT_VERSION"
+          if [ -z "$SHFMT_VERSION" ]; then
+            echo "FAIL: shfmt --version returned empty"
+            exit 1
+          fi
+          echo "PASS: shfmt installed successfully with checksum verification"
