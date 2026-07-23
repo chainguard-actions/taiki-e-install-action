@@ -1,0 +1,27 @@
+name: Test basic tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install shellcheck via action
+        id: action
+        uses: .
+        with:
+          tool: shellcheck
+      - name: Assert shellcheck is installed and executable
+        run: |
+          echo "Checking shellcheck is available..."
+          if ! command -v shellcheck > /dev/null 2>&1; then
+            echo "FAIL: shellcheck not found in PATH"
+            exit 1
+          fi
+          SC_VERSION=$(shellcheck --version 2>&1 | head -2)
+          echo "shellcheck version: $SC_VERSION"
+          if [ -z "$SC_VERSION" ]; then
+            echo "FAIL: shellcheck --version returned empty"
+            exit 1
+          fi
+          echo "PASS: shellcheck is installed"
