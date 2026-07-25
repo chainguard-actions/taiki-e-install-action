@@ -1,0 +1,28 @@
+name: Test tool installation with fallback none
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install hyperfine with fallback set to none
+        id: action
+        uses: .
+        with:
+          tool: hyperfine
+          fallback: none
+      - name: Assert hyperfine is installed
+        run: |
+          echo "Checking hyperfine installation (fallback=none)..."
+          if ! command -v hyperfine > /dev/null 2>&1; then
+            echo "FAIL: hyperfine not found in PATH"
+            exit 1
+          fi
+          HF_VERSION=$(hyperfine --version 2>&1)
+          echo "hyperfine version: $HF_VERSION"
+          if [ -z "$HF_VERSION" ]; then
+            echo "FAIL: hyperfine --version returned empty"
+            exit 1
+          fi
+          echo "PASS: hyperfine installed successfully with fallback=none"
