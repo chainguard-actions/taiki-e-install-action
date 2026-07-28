@@ -1,0 +1,33 @@
+name: Test multiple tools installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install multiple tools
+        id: action
+        uses: .
+        with:
+          tool: shellcheck,shfmt
+      - name: Assert shellcheck is installed
+        run: |
+          echo "Checking shellcheck is in PATH..."
+          if ! command -v shellcheck > /dev/null 2>&1; then
+            echo "FAIL: shellcheck not found in PATH"
+            exit 1
+          fi
+          echo "shellcheck found at: $(command -v shellcheck)"
+          echo "PASS: shellcheck installed"
+      - name: Assert shfmt is installed
+        run: |
+          echo "Checking shfmt is in PATH..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found in PATH"
+            exit 1
+          fi
+          echo "shfmt found at: $(command -v shfmt)"
+          SHFMT_VERSION="$(shfmt --version)"
+          echo "shfmt version: $SHFMT_VERSION"
+          echo "PASS: shfmt installed"

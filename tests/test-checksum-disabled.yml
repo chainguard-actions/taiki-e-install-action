@@ -1,0 +1,29 @@
+name: Test installation with checksum disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install just with checksum disabled
+        id: action
+        uses: .
+        with:
+          tool: just
+          checksum: 'false'
+      - name: Assert just is installed and runnable
+        run: |
+          echo "Checking just is in PATH..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "FAIL: just not found in PATH"
+            exit 1
+          fi
+          echo "just found at: $(command -v just)"
+          VERSION_OUTPUT="$(just --version)"
+          echo "just version output: $VERSION_OUTPUT"
+          if ! echo "$VERSION_OUTPUT" | grep -q "just"; then
+            echo "FAIL: just --version did not produce expected output"
+            exit 1
+          fi
+          echo "PASS: just installed with checksum disabled"
