@@ -1,0 +1,52 @@
+name: Test multiple tools installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install multiple tools (jaq and shfmt)
+        id: install
+        uses: .
+        with:
+          tool: jaq,shfmt
+
+      - name: Assert jaq is installed
+        run: |
+          echo "Checking jaq is in PATH..."
+          if ! command -v jaq > /dev/null 2>&1; then
+            echo "FAIL: jaq not found in PATH"
+            exit 1
+          fi
+          echo "PASS: jaq found at $(command -v jaq)"
+
+      - name: Assert shfmt is installed
+        run: |
+          echo "Checking shfmt is in PATH..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found in PATH"
+            exit 1
+          fi
+          echo "PASS: shfmt found at $(command -v shfmt)"
+
+      - name: Assert both tools work
+        run: |
+          echo "Testing jaq..."
+          JAQ_RESULT=$(echo '{"key":"value"}' | jaq -r '.key')
+          echo "jaq result: $JAQ_RESULT"
+          if [ "$JAQ_RESULT" != "value" ]; then
+            echo "FAIL: jaq expected 'value' but got '$JAQ_RESULT'"
+            exit 1
+          fi
+
+          echo "Testing shfmt..."
+          SHFMT_VERSION=$(shfmt --version)
+          echo "shfmt version: $SHFMT_VERSION"
+          if [ -z "$SHFMT_VERSION" ]; then
+            echo "FAIL: shfmt returned empty version"
+            exit 1
+          fi
+
+          echo "PASS: both tools work correctly"

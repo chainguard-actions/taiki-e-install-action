@@ -1,0 +1,35 @@
+name: Test installation with checksum disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install jaq with checksum disabled
+        id: install
+        uses: .
+        with:
+          tool: jaq
+          checksum: 'false'
+
+      - name: Assert jaq is installed despite checksum being disabled
+        run: |
+          echo "Checking jaq is in PATH..."
+          if ! command -v jaq > /dev/null 2>&1; then
+            echo "FAIL: jaq not found in PATH"
+            exit 1
+          fi
+          echo "PASS: jaq found at $(command -v jaq)"
+
+      - name: Assert jaq runs correctly
+        run: |
+          echo "Running jaq to verify it works..."
+          RESULT=$(echo '[1,2,3]' | jaq 'length')
+          echo "actual: $RESULT"
+          if [ "$RESULT" != "3" ]; then
+            echo "FAIL: expected '3' but got '$RESULT'"
+            exit 1
+          fi
+          echo "PASS: jaq works correctly with checksum disabled"
