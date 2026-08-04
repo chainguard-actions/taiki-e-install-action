@@ -1,0 +1,31 @@
+name: Test installation with checksum disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install shfmt with checksum disabled
+        id: action
+        uses: .
+        with:
+          tool: shfmt
+          checksum: 'false'
+      - name: Assert shfmt is installed even without checksum
+        run: |
+          # Add install-action bin dir to PATH in case GITHUB_PATH propagation is delayed
+          export PATH="$PATH:$HOME/.install-action/bin"
+          echo "Checking shfmt is in PATH or install-action bin dir..."
+          if command -v shfmt > /dev/null 2>&1; then
+            echo "shfmt found at: $(command -v shfmt)"
+            echo "shfmt version: $(shfmt --version)"
+            echo "PASS: shfmt installed successfully with checksum disabled"
+          elif [ -x "$HOME/.install-action/bin/shfmt" ]; then
+            echo "shfmt found at: $HOME/.install-action/bin/shfmt"
+            echo "shfmt version: $("$HOME/.install-action/bin/shfmt" --version)"
+            echo "PASS: shfmt installed successfully with checksum disabled"
+          else
+            echo "FAIL: shfmt not found in PATH or $HOME/.install-action/bin"
+            exit 1
+          fi

@@ -1,0 +1,47 @@
+name: Test multiple tools installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install multiple tools
+        id: action
+        uses: .
+        with:
+          tool: shellcheck,shfmt
+      - name: Assert shellcheck is installed
+        run: |
+          # Add install-action bin dir to PATH in case GITHUB_PATH propagation is delayed
+          export PATH="$PATH:$HOME/.install-action/bin"
+          echo "Checking shellcheck is in PATH or install-action bin dir..."
+          if command -v shellcheck > /dev/null 2>&1; then
+            echo "shellcheck found at: $(command -v shellcheck)"
+            echo "shellcheck version: $(shellcheck --version | head -2)"
+            echo "PASS: shellcheck is installed"
+          elif [ -x "$HOME/.install-action/bin/shellcheck" ]; then
+            echo "shellcheck found at: $HOME/.install-action/bin/shellcheck"
+            echo "shellcheck version: $("$HOME/.install-action/bin/shellcheck" --version | head -2)"
+            echo "PASS: shellcheck is installed"
+          else
+            echo "FAIL: shellcheck not found in PATH or $HOME/.install-action/bin"
+            exit 1
+          fi
+      - name: Assert shfmt is installed
+        run: |
+          # Add install-action bin dir to PATH in case GITHUB_PATH propagation is delayed
+          export PATH="$PATH:$HOME/.install-action/bin"
+          echo "Checking shfmt is in PATH or install-action bin dir..."
+          if command -v shfmt > /dev/null 2>&1; then
+            echo "shfmt found at: $(command -v shfmt)"
+            echo "shfmt version: $(shfmt --version)"
+            echo "PASS: shfmt is installed"
+          elif [ -x "$HOME/.install-action/bin/shfmt" ]; then
+            echo "shfmt found at: $HOME/.install-action/bin/shfmt"
+            echo "shfmt version: $("$HOME/.install-action/bin/shfmt" --version)"
+            echo "PASS: shfmt is installed"
+          else
+            echo "FAIL: shfmt not found in PATH or $HOME/.install-action/bin"
+            exit 1
+          fi

@@ -1,0 +1,30 @@
+name: Test basic tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install shellcheck
+        id: action
+        uses: .
+        with:
+          tool: shellcheck
+      - name: Assert shellcheck is installed and executable
+        run: |
+          # Add install-action bin dir to PATH in case GITHUB_PATH propagation is delayed
+          export PATH="$PATH:$HOME/.install-action/bin"
+          echo "Checking shellcheck is in PATH or install-action bin dir..."
+          if command -v shellcheck > /dev/null 2>&1; then
+            echo "shellcheck found at: $(command -v shellcheck)"
+            echo "shellcheck version: $(shellcheck --version)"
+            echo "PASS: shellcheck is installed and executable"
+          elif [ -x "$HOME/.install-action/bin/shellcheck" ]; then
+            echo "shellcheck found at: $HOME/.install-action/bin/shellcheck"
+            echo "shellcheck version: $("$HOME/.install-action/bin/shellcheck" --version)"
+            echo "PASS: shellcheck is installed and executable"
+          else
+            echo "FAIL: shellcheck not found in PATH or $HOME/.install-action/bin"
+            exit 1
+          fi

@@ -1,0 +1,35 @@
+name: Test specific version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install shfmt at specific version
+        id: action
+        uses: .
+        with:
+          tool: shfmt@3.12.0
+      - name: Assert shfmt is installed at the correct version
+        run: |
+          # Add install-action bin dir to PATH in case GITHUB_PATH propagation is delayed
+          export PATH="$PATH:$HOME/.install-action/bin"
+          echo "Checking shfmt is in PATH or install-action bin dir..."
+          SHFMT_BIN=""
+          if command -v shfmt > /dev/null 2>&1; then
+            SHFMT_BIN="$(command -v shfmt)"
+          elif [ -x "$HOME/.install-action/bin/shfmt" ]; then
+            SHFMT_BIN="$HOME/.install-action/bin/shfmt"
+          else
+            echo "FAIL: shfmt not found in PATH or $HOME/.install-action/bin"
+            exit 1
+          fi
+          echo "shfmt found at: $SHFMT_BIN"
+          ACTUAL_VERSION="$("$SHFMT_BIN" --version)"
+          echo "shfmt version: $ACTUAL_VERSION"
+          if [ "$ACTUAL_VERSION" != "v3.12.0" ]; then
+            echo "FAIL: expected version v3.12.0 but got $ACTUAL_VERSION"
+            exit 1
+          fi
+          echo "PASS: shfmt v3.12.0 is installed correctly"
