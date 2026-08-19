@@ -1,0 +1,28 @@
+name: Test installation with checksum disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install shfmt with checksum disabled
+        id: action
+        uses: .
+        with:
+          tool: shfmt
+          checksum: 'false'
+      - name: Assert shfmt is installed even without checksum verification
+        run: |
+          echo "Checking shfmt is on PATH..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found on PATH"
+            exit 1
+          fi
+          VERSION="$(shfmt --version)"
+          echo "shfmt version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: shfmt --version returned empty"
+            exit 1
+          fi
+          echo "PASS: shfmt installed successfully with checksum disabled"
