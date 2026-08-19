@@ -1,0 +1,32 @@
+name: Test whitespace-separated tool list
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: |
+            just
+            typos
+      - name: Assert just is installed
+        run: |
+          echo "Checking if 'just' is available..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "FAIL: 'just' command not found after installation"
+            exit 1
+          fi
+          echo "just version: $(just --version)"
+          echo "PASS: 'just' is installed"
+      - name: Assert typos is installed
+        run: |
+          echo "Checking if 'typos' is available..."
+          if ! command -v typos > /dev/null 2>&1; then
+            echo "FAIL: 'typos' command not found after installation"
+            exit 1
+          fi
+          echo "typos version: $(typos --version)"
+          echo "PASS: 'typos' is installed"

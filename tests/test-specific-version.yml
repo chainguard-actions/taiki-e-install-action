@@ -1,0 +1,26 @@
+name: Test specific version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: just@1.36.0
+      - name: Assert just is installed with correct version
+        run: |
+          echo "Checking if 'just' is available..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "FAIL: 'just' command not found after installation"
+            exit 1
+          fi
+          ACTUAL_VERSION="$(just --version | awk '{print $2}')"
+          echo "actual version: $ACTUAL_VERSION"
+          if [ "$ACTUAL_VERSION" != "1.36.0" ]; then
+            echo "FAIL: expected version '1.36.0' but got '$ACTUAL_VERSION'"
+            exit 1
+          fi
+          echo "PASS: 'just' version 1.36.0 is installed"
