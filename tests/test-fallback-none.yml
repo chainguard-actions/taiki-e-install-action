@@ -1,0 +1,28 @@
+name: Test tool installation with fallback disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install just with fallback disabled
+        id: action
+        uses: .
+        with:
+          tool: just
+          fallback: 'none'
+      - name: Assert just is installed without fallback
+        run: |
+          echo "Checking just is available (installed without fallback)..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "FAIL: just not found in PATH"
+            exit 1
+          fi
+          JUST_VERSION=$(just --version 2>&1)
+          echo "just version: $JUST_VERSION"
+          if [ -z "$JUST_VERSION" ]; then
+            echo "FAIL: just --version returned empty"
+            exit 1
+          fi
+          echo "PASS: just installed successfully with fallback=none"
