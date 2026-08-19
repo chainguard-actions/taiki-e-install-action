@@ -6,21 +6,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Install specific version of shellcheck
+        id: action
         uses: .
         with:
-          tool: ripgrep@14.1.1
-      - name: Assert ripgrep version is correct
+          tool: shellcheck@0.11.0
+      - name: Assert shellcheck is installed with correct version
         run: |
-          echo "Checking if rg is available..."
-          if ! command -v rg > /dev/null 2>&1; then
-            echo "FAIL: rg (ripgrep) was not found in PATH"
+          echo "Checking shellcheck installation..."
+          if ! command -v shellcheck > /dev/null 2>&1; then
+            echo "FAIL: shellcheck not found in PATH"
             exit 1
           fi
-          ACTUAL_VERSION=$(rg --version | head -1 | awk '{print $2}')
-          echo "actual version: $ACTUAL_VERSION"
-          if [ "$ACTUAL_VERSION" != "14.1.1" ]; then
-            echo "FAIL: expected version 14.1.1, got $ACTUAL_VERSION"
+          SC_VERSION=$(shellcheck --version 2>&1)
+          echo "shellcheck version output: $SC_VERSION"
+          if [ -z "$SC_VERSION" ]; then
+            echo "FAIL: shellcheck --version returned empty"
             exit 1
           fi
-          echo "PASS: ripgrep 14.1.1 installed successfully"
+          if ! echo "$SC_VERSION" | grep -q "0.11.0"; then
+            echo "FAIL: expected version 0.11.0 but got: $SC_VERSION"
+            exit 1
+          fi
+          echo "PASS: shellcheck@0.11.0 is installed"
