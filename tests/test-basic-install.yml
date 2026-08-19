@@ -7,17 +7,16 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Install shellcheck
-        id: install
+        id: action
         uses: .
         with:
           tool: shellcheck
-      - name: Assert shellcheck is installed and runnable
+      - name: Assert shellcheck is installed
         run: |
           echo "Checking shellcheck installation..."
           if ! command -v shellcheck > /dev/null 2>&1; then
-            echo "FAIL: shellcheck command not found"
+            echo "FAIL: shellcheck not found in PATH"
             exit 1
           fi
-          VERSION=$(shellcheck --version)
-          echo "shellcheck version: $VERSION"
-          echo "PASS: shellcheck installed successfully"
+          echo "shellcheck version: $(shellcheck --version)"
+          echo "PASS: shellcheck is installed"
