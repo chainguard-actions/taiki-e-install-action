@@ -6,18 +6,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Install shellcheck with fallback none
+        id: action
         uses: .
         with:
-          tool: shfmt
+          tool: shellcheck
           fallback: 'none'
-      - name: Assert shfmt is installed with fallback none
+      - name: Assert shellcheck is installed
         run: |
-          echo "Checking shfmt installation (fallback=none)..."
-          if ! command -v shfmt > /dev/null 2>&1; then
-            echo "FAIL: shfmt was not found in PATH"
+          echo "Checking shellcheck installation (fallback=none)..."
+          if ! command -v shellcheck > /dev/null 2>&1; then
+            echo "FAIL: shellcheck not found in PATH"
             exit 1
           fi
-          SHFMT_VERSION=$(shfmt --version)
-          echo "actual: $SHFMT_VERSION"
-          echo "PASS: shfmt is installed with fallback=none: $SHFMT_VERSION"
+          SC_VERSION=$(shellcheck --version 2>&1 | head -2)
+          echo "shellcheck version: $SC_VERSION"
+          if [ -z "$SC_VERSION" ]; then
+            echo "FAIL: shellcheck --version returned empty"
+            exit 1
+          fi
+          echo "PASS: shellcheck is installed with fallback=none"
