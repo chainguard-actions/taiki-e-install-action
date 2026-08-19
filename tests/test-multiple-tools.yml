@@ -1,4 +1,4 @@
-name: Test basic tool installation
+name: Test multiple tool installation
 on:
   workflow_dispatch:
 jobs:
@@ -6,12 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Install shellcheck (basic tool)
+      - name: Install multiple tools (comma-separated)
         id: action
         uses: .
         with:
-          tool: shellcheck
-      - name: Assert shellcheck is installed and executable
+          tool: shellcheck,shfmt
+      - name: Assert shellcheck is installed
         run: |
           echo "Checking shellcheck is on PATH..."
           if ! command -v shellcheck > /dev/null 2>&1; then
@@ -20,3 +20,12 @@ jobs:
           fi
           echo "PASS: shellcheck is installed"
           shellcheck --version
+      - name: Assert shfmt is installed
+        run: |
+          echo "Checking shfmt is on PATH..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found on PATH"
+            exit 1
+          fi
+          echo "PASS: shfmt is installed"
+          shfmt --version

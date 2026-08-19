@@ -1,0 +1,33 @@
+name: Test whitespace-separated tool list
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install tools using whitespace-separated list
+        id: action
+        uses: .
+        with:
+          tool: |
+            shellcheck
+            shfmt
+      - name: Assert shellcheck is installed
+        run: |
+          echo "Checking shellcheck is on PATH..."
+          if ! command -v shellcheck > /dev/null 2>&1; then
+            echo "FAIL: shellcheck not found on PATH"
+            exit 1
+          fi
+          echo "PASS: shellcheck is installed"
+          shellcheck --version
+      - name: Assert shfmt is installed
+        run: |
+          echo "Checking shfmt is on PATH..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found on PATH"
+            exit 1
+          fi
+          echo "PASS: shfmt is installed"
+          shfmt --version
