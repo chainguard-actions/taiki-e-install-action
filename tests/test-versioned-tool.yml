@@ -1,4 +1,4 @@
-name: Test basic tool installation
+name: Test versioned tool installation
 on:
   workflow_dispatch:
 jobs:
@@ -6,12 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Install just via install-action
+      - name: Install specific version of just
         id: action
         uses: .
         with:
-          tool: just
-      - name: Assert just is installed and executable
+          tool: just@1.40.0
+      - name: Assert just is installed with correct version
         run: |
           echo "Checking just installation..."
           if ! command -v just > /dev/null 2>&1; then
@@ -20,8 +20,9 @@ jobs:
           fi
           JUST_VERSION=$(just --version 2>&1)
           echo "just version: $JUST_VERSION"
-          if [ -z "$JUST_VERSION" ]; then
-            echo "FAIL: just --version returned empty"
+          if echo "$JUST_VERSION" | grep -q "1.40.0"; then
+            echo "PASS: just 1.40.0 is installed"
+          else
+            echo "FAIL: expected version 1.40.0, got: $JUST_VERSION"
             exit 1
           fi
-          echo "PASS: just is installed"
