@@ -1,4 +1,4 @@
-name: Test basic tool installation
+name: Test tool installation with fallback disabled
 on:
   workflow_dispatch:
 jobs:
@@ -6,14 +6,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Install shellcheck via install-action
+      - name: Install shellcheck with fallback set to none
         id: action
         uses: .
         with:
           tool: shellcheck
-      - name: Assert shellcheck is installed and executable
+          fallback: 'none'
+      - name: Assert shellcheck is installed without fallback
         run: |
-          echo "Checking shellcheck installation..."
+          echo "Checking shellcheck installation (fallback=none)..."
           if ! command -v shellcheck > /dev/null 2>&1; then
             echo "FAIL: shellcheck not found in PATH"
             exit 1
@@ -24,4 +25,4 @@ jobs:
             echo "FAIL: shellcheck --version returned empty"
             exit 1
           fi
-          echo "PASS: shellcheck is installed"
+          echo "PASS: shellcheck installed successfully with fallback=none"

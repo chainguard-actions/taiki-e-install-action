@@ -1,0 +1,55 @@
+name: Test pinned version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Setup GITHUB_PATH for act compatibility
+        run: |
+          if [ -z "${GITHUB_PATH:-}" ]; then
+            export GITHUB_PATH="$(mktemp)"
+            echo "GITHUB_PATH=${GITHUB_PATH}" >> "$GITHUB_ENV"
+          fi
+          touch "${GITHUB_PATH}"
+          echo "GITHUB_PATH is: ${GITHUB_PATH}"
+      - name: Install just at a specific version
+        id: action
+        uses: .
+        with:
+          tool: just@1.36.0
+          fallback: none
+      - name: Assert just is installed at correct version
+        run: |
+          echo "Checking just is available at version 1.36.0..."
+          INSTALL_BIN="$HOME/.install-action/bin"
+          CARGO_BIN="$HOME/.cargo/bin"
+          JUST_BIN=""
+          for dir in "$INSTALL_BIN" "$CARGO_BIN" "/usr/local/bin"; do
+            if [ -x "${dir}/just" ]; then
+              JUST_BIN="${dir}/just"
+              break
+            fi
+          done
+          if [ -z "$JUST_BIN" ]; then
+            if command -v just > /dev/null 2>&1; then
+              JUST_BIN="just"
+            fi
+          fi
+          if [ -z "$JUST_BIN" ]; then
+            echo "FAIL: just not found"
+            echo "Contents of ~/.install-action/bin:"
+            ls -la "$HOME/.install-action/bin" 2>/dev/null || echo "(directory does not exist)"
+            exit 1
+          fi
+          VERSION=$("$JUST_BIN" --version 2>&1)
+          echo "Installed version: $VERSION"
+          if ! echo "$VERSION" | grep -q "1.36.0"; then
+            echo "FAIL: expected version 1.36.0, got: $VERSION"
+            exit 1
+          fi
+          echo "PASS: just 1.36.0 is installed at $JUST_BIN"
