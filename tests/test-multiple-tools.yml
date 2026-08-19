@@ -6,28 +6,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Install multiple tools via install-action
+        id: action
         uses: .
         with:
           tool: shellcheck,shfmt
-        env:
-          RUNNER_OS: Linux
-          RUNNER_ARCH: X64
       - name: Assert shellcheck is installed
         run: |
-          echo "Checking if shellcheck is installed..."
+          echo "Checking shellcheck installation..."
           if ! command -v shellcheck > /dev/null 2>&1; then
-            echo "FAIL: shellcheck was not found in PATH"
+            echo "FAIL: shellcheck not found in PATH"
             exit 1
           fi
-          echo "shellcheck version: $(shellcheck --version | head -2)"
-          echo "PASS: shellcheck installed"
+          SC_VERSION=$(shellcheck --version 2>&1 | head -2)
+          echo "shellcheck version: $SC_VERSION"
+          echo "PASS: shellcheck is installed"
       - name: Assert shfmt is installed
         run: |
-          echo "Checking if shfmt is installed..."
+          echo "Checking shfmt installation..."
           if ! command -v shfmt > /dev/null 2>&1; then
-            echo "FAIL: shfmt was not found in PATH"
+            echo "FAIL: shfmt not found in PATH"
             exit 1
           fi
-          echo "shfmt version: $(shfmt --version)"
-          echo "PASS: shfmt installed"
+          SHFMT_VERSION=$(shfmt --version 2>&1)
+          echo "shfmt version: $SHFMT_VERSION"
+          echo "PASS: shfmt is installed"
