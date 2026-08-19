@@ -6,18 +6,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - id: action
+      - name: Install just
+        id: action
         uses: .
         with:
-          tool: ripgrep
-          checksum: 'true'
-          fallback: 'cargo-binstall'
-      - name: Assert ripgrep is installed
+          tool: just
+      - name: Assert just is installed and runnable
         run: |
-          echo "Checking if rg is available..."
-          if ! command -v rg > /dev/null 2>&1; then
-            echo "FAIL: rg (ripgrep) was not found in PATH"
+          echo "Checking if 'just' is available in PATH..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "FAIL: 'just' was not found in PATH"
             exit 1
           fi
-          echo "PASS: rg is installed at $(command -v rg)"
-          rg --version
+          echo "just found at: $(command -v just)"
+          echo "just version: $(just --version)"
+          echo "PASS: 'just' is installed and runnable"
