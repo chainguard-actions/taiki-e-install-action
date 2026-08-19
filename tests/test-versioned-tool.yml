@@ -1,4 +1,4 @@
-name: Test basic tool installation
+name: Test versioned tool installation
 on:
   workflow_dispatch:
 jobs:
@@ -9,14 +9,18 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: shellcheck
-      - name: Assert shellcheck is installed
+          tool: shellcheck@0.10.0
+      - name: Assert shellcheck version is correct
         run: |
           echo "Checking shellcheck installation..."
           if ! command -v shellcheck > /dev/null 2>&1; then
             echo "FAIL: shellcheck was not found in PATH"
             exit 1
           fi
-          SC_VERSION=$(shellcheck --version | head -2 | tail -1)
+          SC_VERSION=$(shellcheck --version | grep 'version:' | awk '{print $2}')
           echo "actual: $SC_VERSION"
-          echo "PASS: shellcheck is installed: $SC_VERSION"
+          if [ "$SC_VERSION" != "0.10.0" ]; then
+            echo "FAIL: expected shellcheck version 0.10.0, got: $SC_VERSION"
+            exit 1
+          fi
+          echo "PASS: shellcheck 0.10.0 is installed"

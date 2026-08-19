@@ -1,4 +1,4 @@
-name: Test basic tool installation
+name: Test installation with fallback disabled
 on:
   workflow_dispatch:
 jobs:
@@ -10,13 +10,14 @@ jobs:
         uses: .
         with:
           tool: shellcheck
-      - name: Assert shellcheck is installed
+          fallback: none
+      - name: Assert shellcheck is installed without fallback
         run: |
-          echo "Checking shellcheck installation..."
+          echo "Checking shellcheck installation (fallback=none)..."
           if ! command -v shellcheck > /dev/null 2>&1; then
             echo "FAIL: shellcheck was not found in PATH"
             exit 1
           fi
           SC_VERSION=$(shellcheck --version | head -2 | tail -1)
           echo "actual: $SC_VERSION"
-          echo "PASS: shellcheck is installed: $SC_VERSION"
+          echo "PASS: shellcheck is installed with fallback=none: $SC_VERSION"
