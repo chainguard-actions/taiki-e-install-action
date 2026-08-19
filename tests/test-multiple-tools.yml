@@ -9,22 +9,24 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: shfmt,shellcheck
-      - name: Assert shfmt is installed
-        run: |
-          echo "Checking shfmt is available..."
-          if ! command -v shfmt > /dev/null 2>&1; then
-            echo "FAIL: shfmt was not found in PATH"
-            exit 1
-          fi
-          echo "shfmt version: $(shfmt --version)"
-          echo "PASS: shfmt installed"
+          tool: shellcheck,shfmt
       - name: Assert shellcheck is installed
         run: |
-          echo "Checking shellcheck is available..."
+          echo "Checking if shellcheck is installed..."
           if ! command -v shellcheck > /dev/null 2>&1; then
             echo "FAIL: shellcheck was not found in PATH"
             exit 1
           fi
-          echo "shellcheck version: $(shellcheck --version | head -2)"
-          echo "PASS: shellcheck installed"
+          SC_VERSION=$(shellcheck --version | head -2 | tail -1)
+          echo "actual shellcheck: $SC_VERSION"
+          echo "PASS: shellcheck is installed"
+      - name: Assert shfmt is installed
+        run: |
+          echo "Checking if shfmt is installed..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt was not found in PATH"
+            exit 1
+          fi
+          SHFMT_VERSION=$(shfmt --version)
+          echo "actual shfmt: $SHFMT_VERSION"
+          echo "PASS: shfmt is installed"
