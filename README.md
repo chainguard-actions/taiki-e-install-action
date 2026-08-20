@@ -8,7 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
-| v2.68.32 | [`v2.68.32`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.68.32) | — |
+| v2.68.32 | [`v2.68.32`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.68.32) | [`f916cfa`](https://github.com/taiki-e/install-action/commit/f916cfac5d8efd040e250d0cd6b967616504b3a4) |
 | v2.81.1 | [`v2.81.1`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.81.1) | [`e49978b`](https://github.com/taiki-e/install-action/commit/e49978b799e49ff429d162b7a30601a569ab6538) |
 | v2.81.10 | [`v2.81.10`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.81.10) | [`7a79fe8`](https://github.com/taiki-e/install-action/commit/7a79fe8c3a13344501c80d99cae481c1c9085912) |
 | v2.81.11 | [`v2.81.11`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.81.11) | [`15449e3`](https://github.com/taiki-e/install-action/commit/15449e3094499af05d8d964a1c884208e4b8b595) |
