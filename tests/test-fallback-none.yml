@@ -1,0 +1,22 @@
+name: Test tool installation with fallback disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: install
+        uses: .
+        with:
+          tool: shfmt
+          fallback: 'none'
+      - name: Assert shfmt is installed without fallback
+        run: |
+          echo "Checking shfmt is on PATH..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found on PATH"
+            exit 1
+          fi
+          echo "shfmt version: $(shfmt --version)"
+          echo "PASS: shfmt is installed (fallback=none)"

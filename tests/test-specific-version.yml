@@ -1,0 +1,26 @@
+name: Test specific version tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: install
+        uses: .
+        with:
+          tool: typos@1.28.0
+      - name: Assert typos is installed at the correct version
+        run: |
+          echo "Checking typos is on PATH..."
+          if ! command -v typos > /dev/null 2>&1; then
+            echo "FAIL: typos not found on PATH"
+            exit 1
+          fi
+          ACTUAL_VERSION=$(typos --version | awk '{print $2}')
+          echo "typos version: $ACTUAL_VERSION"
+          if [ "$ACTUAL_VERSION" != "1.28.0" ]; then
+            echo "FAIL: expected version 1.28.0, got $ACTUAL_VERSION"
+            exit 1
+          fi
+          echo "PASS: typos@1.28.0 is installed"
