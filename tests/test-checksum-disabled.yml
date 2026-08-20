@@ -1,4 +1,4 @@
-name: Test basic tool installation
+name: Test tool installation with checksum disabled
 on:
   workflow_dispatch:
 jobs:
@@ -10,7 +10,8 @@ jobs:
         uses: .
         with:
           tool: shfmt
-      - name: Assert tool is installed
+          checksum: 'false'
+      - name: Assert tool is installed without checksum verification
         run: |
           # The action adds ~/.install-action/bin to GITHUB_PATH.
           # Under act, GITHUB_PATH may not be picked up between steps,
@@ -21,11 +22,11 @@ jobs:
           echo "Checking if shfmt is installed..."
           if command -v shfmt > /dev/null 2>&1; then
             echo "shfmt version: $(shfmt --version)"
-            echo "PASS: shfmt is installed and executable"
+            echo "PASS: shfmt installed successfully with checksum disabled"
           elif [ -f "${INSTALL_BIN}/shfmt" ]; then
             echo "shfmt found at ${INSTALL_BIN}/shfmt"
             echo "shfmt version: $("${INSTALL_BIN}/shfmt" --version)"
-            echo "PASS: shfmt is installed and executable"
+            echo "PASS: shfmt installed successfully with checksum disabled"
           else
             echo "FAIL: shfmt was not found in PATH or ${INSTALL_BIN}"
             ls -la "${INSTALL_BIN}" 2>/dev/null || echo "Install bin dir does not exist"

@@ -1,4 +1,4 @@
-name: Test basic tool installation
+name: Test multiple tool installation
 on:
   workflow_dispatch:
 jobs:
@@ -9,8 +9,8 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: shfmt
-      - name: Assert tool is installed
+          tool: shfmt, shellcheck
+      - name: Assert tools are installed
         run: |
           # The action adds ~/.install-action/bin to GITHUB_PATH.
           # Under act, GITHUB_PATH may not be picked up between steps,
@@ -18,16 +18,33 @@ jobs:
           INSTALL_BIN="${HOME}/.install-action/bin"
           export PATH="${PATH}:${INSTALL_BIN}"
           echo "PATH: $PATH"
+
           echo "Checking if shfmt is installed..."
           if command -v shfmt > /dev/null 2>&1; then
             echo "shfmt version: $(shfmt --version)"
-            echo "PASS: shfmt is installed and executable"
+            echo "PASS: shfmt is installed"
           elif [ -f "${INSTALL_BIN}/shfmt" ]; then
             echo "shfmt found at ${INSTALL_BIN}/shfmt"
             echo "shfmt version: $("${INSTALL_BIN}/shfmt" --version)"
-            echo "PASS: shfmt is installed and executable"
+            echo "PASS: shfmt is installed"
           else
             echo "FAIL: shfmt was not found in PATH or ${INSTALL_BIN}"
             ls -la "${INSTALL_BIN}" 2>/dev/null || echo "Install bin dir does not exist"
             exit 1
           fi
+
+          echo "Checking if shellcheck is installed..."
+          if command -v shellcheck > /dev/null 2>&1; then
+            echo "shellcheck version: $(shellcheck --version | head -2)"
+            echo "PASS: shellcheck is installed"
+          elif [ -f "${INSTALL_BIN}/shellcheck" ]; then
+            echo "shellcheck found at ${INSTALL_BIN}/shellcheck"
+            echo "shellcheck version: $("${INSTALL_BIN}/shellcheck" --version | head -2)"
+            echo "PASS: shellcheck is installed"
+          else
+            echo "FAIL: shellcheck was not found in PATH or ${INSTALL_BIN}"
+            ls -la "${INSTALL_BIN}" 2>/dev/null || echo "Install bin dir does not exist"
+            exit 1
+          fi
+
+          echo "PASS: all tools are installed and executable"

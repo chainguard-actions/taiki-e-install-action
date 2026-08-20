@@ -1,4 +1,4 @@
-name: Test basic tool installation
+name: Test versioned tool installation
 on:
   workflow_dispatch:
 jobs:
@@ -9,8 +9,8 @@ jobs:
       - id: action
         uses: .
         with:
-          tool: shfmt
-      - name: Assert tool is installed
+          tool: shfmt@3.8.0
+      - name: Assert versioned tool is installed
         run: |
           # The action adds ~/.install-action/bin to GITHUB_PATH.
           # Under act, GITHUB_PATH may not be picked up between steps,
@@ -19,15 +19,20 @@ jobs:
           export PATH="${PATH}:${INSTALL_BIN}"
           echo "PATH: $PATH"
           echo "Checking if shfmt is installed..."
+          SHFMT_BIN=""
           if command -v shfmt > /dev/null 2>&1; then
-            echo "shfmt version: $(shfmt --version)"
-            echo "PASS: shfmt is installed and executable"
+            SHFMT_BIN="shfmt"
           elif [ -f "${INSTALL_BIN}/shfmt" ]; then
-            echo "shfmt found at ${INSTALL_BIN}/shfmt"
-            echo "shfmt version: $("${INSTALL_BIN}/shfmt" --version)"
-            echo "PASS: shfmt is installed and executable"
+            SHFMT_BIN="${INSTALL_BIN}/shfmt"
           else
             echo "FAIL: shfmt was not found in PATH or ${INSTALL_BIN}"
             ls -la "${INSTALL_BIN}" 2>/dev/null || echo "Install bin dir does not exist"
             exit 1
           fi
+          INSTALLED_VERSION="$("${SHFMT_BIN}" --version)"
+          echo "shfmt version: $INSTALLED_VERSION"
+          if [ "$INSTALLED_VERSION" != "v3.8.0" ]; then
+            echo "FAIL: expected version v3.8.0, got $INSTALLED_VERSION"
+            exit 1
+          fi
+          echo "PASS: shfmt v3.8.0 is installed"
