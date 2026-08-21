@@ -1,0 +1,32 @@
+name: Test specific version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: install
+        uses: .
+        with:
+          tool: shellcheck@0.10.0
+      - name: Assert shellcheck specific version is installed
+        run: |
+          echo "Checking shellcheck installation..."
+          if ! command -v shellcheck > /dev/null 2>&1; then
+            echo "FAIL: shellcheck not found in PATH"
+            exit 1
+          fi
+          ACTUAL_VERSION=$(shellcheck --version | grep 'version:' | awk '{print $2}')
+          echo "shellcheck version: $ACTUAL_VERSION"
+          if [ -z "$ACTUAL_VERSION" ]; then
+            echo "FAIL: shellcheck --version returned empty"
+            exit 1
+          fi
+          # Verify the installed version matches what we requested
+          if echo "$ACTUAL_VERSION" | grep -q "0.10.0"; then
+            echo "PASS: shellcheck 0.10.0 is installed"
+          else
+            echo "FAIL: expected shellcheck 0.10.0 but got $ACTUAL_VERSION"
+            exit 1
+          fi
