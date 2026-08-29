@@ -1,0 +1,31 @@
+name: Test specific version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install specific version of just
+        id: action
+        uses: .
+        with:
+          tool: just@1.36.0
+      - name: Assert just version matches
+        run: |
+          # Add common install locations to PATH in case GITHUB_PATH wasn't processed
+          export PATH="$HOME/.install-action/bin:$HOME/.cargo/bin:$PATH"
+          echo "Checking just version..."
+          if ! command -v just > /dev/null 2>&1; then
+            echo "FAIL: just command not found"
+            echo "Contents of ~/.install-action/bin (if exists):"
+            ls -la "$HOME/.install-action/bin" 2>/dev/null || echo "  (directory not found)"
+            exit 1
+          fi
+          VERSION=$(just --version)
+          echo "actual version: $VERSION"
+          if ! echo "$VERSION" | grep -q '1.36.0'; then
+            echo "FAIL: expected version 1.36.0 but got: $VERSION"
+            exit 1
+          fi
+          echo "PASS: just 1.36.0 installed correctly"
