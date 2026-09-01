@@ -1,0 +1,330 @@
+name: CI
+
+permissions: {}
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - dev
+      - ci-*
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_GIT_FETCH_WITH_CLI: true
+  CARGO_NET_RETRY: 10
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  RUSTFLAGS: -D warnings
+  RUSTUP_MAX_RETRIES: 10
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -CeEuxo pipefail {0}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  tidy:
+    uses: taiki-e/github-actions/.github/workflows/tidy.yml@e6a1170cbd07eb898017958967912976fce18f2d # 2026.7.3
+    permissions:
+      security-events: write # for github/codeql-action/*
+  test-manifest-schema:
+    needs: tidy
+    uses: taiki-e/github-actions/.github/workflows/rust-test.yml@e6a1170cbd07eb898017958967912976fce18f2d # 2026.7.3
+    with:
+      test-args: --exclude install-action-internal-codegen
+      no-std: false
+
+  test:
+    needs: tidy
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # NB: Sync list with https://github.com/taiki-e/checkout-action/blob/HEAD/.github/workflows/ci.yml
+          # --------------------------------------------------------------------
+          # GitHub-hosted runners
+          - os: ubuntu-26.04
+          - os: ubuntu-26.04-arm
+          - os: ubuntu-24.04
+          - os: ubuntu-24.04-arm
+          - os: ubuntu-22.04
+          - os: ubuntu-22.04-arm
+          - os: ubuntu-slim
+          - os: ubuntu-22.04
+            tool: major.minor.patch
+          - os: ubuntu-22.04
+            tool: major.minor
+          - os: ubuntu-22.04
+            tool: major
+          - os: macos-26
+          - os: macos-15
+          - os: macos-15-intel
+          - os: windows-2025
+          - os: windows-2025
+            bash: msys2
+          - os: windows-2025
+            bash: cygwin
+          - os: windows-2022
+          - os: windows-2022
+            bash: msys2
+          - os: windows-2022
+            bash: cygwin
+          - os: windows-11-arm
+          - os: windows-2022
+            tool: major.minor.patch
+          - os: windows-2022
+            tool: major.minor
+          - os: windows-2022
+            tool: major
+          # --------------------------------------------------------------------
+          # Containers
+          # --------------------------------------------------------------------
+          # Debian-based
+          - container: debian:sid # glibc
+          - container: debian:testing # glibc
+          - container: debian:13-slim # glibc 2.41
+          - container: debian:12-slim # glibc 2.36
+          - container: debian:11-slim # glibc 2.31, EoL
+          - container: debian:10-slim # glibc 2.28, EoL, end of LTS
+          - container: debian:9-slim # glibc 2.24, EoL, end of LTS
+          - container: debian/eol:jessie-slim # 8, glibc 2.19, EoL, end of LTS
+          - container: ubuntu:devel # glibc
+          - container: ubuntu:rolling # glibc
+          - container: ubuntu:26.04 # glibc 2.43
+          - container: ubuntu:24.04 # glibc 2.39
+          - container: ubuntu:22.04 # glibc 2.35
+          - container: ubuntu:20.04 # glibc 2.31, EoL
+          - container: ubuntu:18.04 # glibc 2.27, EoL
+          - container: ubuntu:16.04 # glibc 2.23, EoL, end of ESM
+          - container: ubuntu:14.04 # glibc 2.19, EoL, end of ESM
+          # --------------------------------------------------------------------
+          # Fedora/RHEL-based
+          - container: fedora:latest # glibc
+          - container: centos:7 # glibc 2.17, EoL
+          - container: centos:6 # glibc 2.12, EoL
+          - container: almalinux:10 # glibc 2.39
+          - container: almalinux:10-minimal # glibc 2.39
+          - container: almalinux:9 # glibc 2.34
+          - container: almalinux:9-minimal # glibc 2.34
+          - container: almalinux:8 # glibc 2.28
+          - container: almalinux:8-minimal # glibc 2.28
+          # --------------------------------------------------------------------
+          # SUSE-based
+          # - container: opensuse/tumbleweed:latest # glibc # TODO: zypper timeout
+          - container: opensuse/leap:latest # glibc
+          # --------------------------------------------------------------------
+          # apk
+          - container: alpine:3.23 # musl 1.2.5
+          - container: alpine:3.22 # musl 1.2.5
+          - container: alpine:3.21 # musl 1.2.5
+          # Skip intermediate versions that have reached EoL by default.
+          # - container: alpine:3.20 # musl 1.2.5, EoL
+          # - container: alpine:3.19 # musl 1.2.4, EoL
+          # - container: alpine:3.18 # musl 1.2.4, EoL
+          # - container: alpine:3.17 # musl 1.2.3, EoL
+          # - container: alpine:3.16 # musl 1.2.3, EoL
+          # - container: alpine:3.15 # musl 1.2.2, EoL
+          # - container: alpine:3.14 # musl 1.2.2, EoL
+          # - container: alpine:3.13 # musl 1.2.2, EoL
+          # - container: alpine:3.12 # musl 1.1.24, EoL
+          # - container: alpine:3.11 # musl 1.1.24, EoL
+          # - container: alpine:3.10 # musl 1.1.22, EoL
+          # - container: alpine:3.9 # musl 1.1.20, EoL
+          # - container: alpine:3.8 # musl 1.1.19, EoL
+          # - container: alpine:3.7 # musl 1.1.18, EoL, broken env command
+          # - container: alpine:3.6 # musl 1.1.16, EoL, broken env command
+          # - container: alpine:3.5 # musl 1.1.15, EoL
+          # - container: alpine:3.4 # musl 1.1.14, EoL
+          # - container: alpine:3.3 # musl 1.1.12, EoL
+          - container: alpine:3.2 # musl 1.1.11, EoL
+          # --------------------------------------------------------------------
+          # Arch-based
+          - container: archlinux:latest # glibc
+    runs-on: ${{ matrix.os || 'ubuntu-24.04' }}
+    container: ${{ matrix.container }}
+    timeout-minutes: 30
+    steps:
+      - name: Install requirements (old Debian)
+        run: |
+          # In Debian, the old repositories is removed from the main mirrors some time after EoL.
+          codename=$(grep -E '^VERSION_CODENAME=' /etc/os-release | cut -d= -f2)
+          sed -i /etc/apt/sources.list -e 's/deb.debian.org/archive.debian.org/g' \
+            -e 's|security.debian.org|archive.debian.org/|g' \
+            -e "/${codename}-updates/d"
+        if: startsWith(matrix.container, 'debian:9') || startsWith(matrix.container, 'debian:10')
+      - name: Install requirements (CentOS)
+        run: |
+          retry() {
+            for i in {1..10}; do
+              if "$@"; then
+                return 0
+              else
+                sleep "${i}"
+              fi
+            done
+            "$@"
+          }
+          # In CentOS, the old repositories is removed from the main mirrors just after EoL.
+          # https://github.com/rust-lang/rust/pull/126352
+          sed -i /etc/yum.repos.d/*.repo -e 's!^mirrorlist!#mirrorlist!' \
+            -e 's!^#baseurl=http://mirror.centos.org/!baseurl=https://vault.centos.org/!'
+          sed -i 's/enabled=1/enabled=0/' /etc/yum/pluginconf.d/fastestmirror.conf
+          if [[ "${CONTAINER}" == "centos:6" ]]; then
+            # CentOS 6's curl (7.19.7) has no curl has no --proto/--tlsv1.2.
+            retry yum install -y gcc openssl-devel
+            retry curl -fsSL --retry 10 https://curl.se/download/curl-7.34.0.tar.gz | tar xzf -
+            cd -- curl-*
+            ./configure --prefix=/usr/local --with-ssl
+            make
+            make install
+            # for checkout-action https://github.com/taiki-e/checkout-action/blob/v1.3.0/.github/workflows/ci.yml#L135-L143
+            retry yum install -y openssh-clients perl perl-Error perl-TermReadKey rsync
+            retry rpm -i \
+              https://vault.ius.io/el6/x86_64/packages/p/perl-Git18-1.8.5.5-4.ius.el6.noarch.rpm \
+              https://vault.ius.io/el6/x86_64/packages/g/git18-1.8.5.5-4.ius.el6.x86_64.rpm
+          fi
+        env:
+          CONTAINER: ${{ matrix.container }}
+        if: startsWith(matrix.container, 'centos')
+      # gcc for rustc
+      - run: apk --no-cache add gcc
+        shell: sh
+        if: startsWith(matrix.container, 'alpine')
+      - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
+      # cross attempts to install rust-src when Cargo.toml is available even if `cross --version`
+      - run: rm -- Cargo.toml
+      - name: Generate tool list
+        id: tool-list
+        run: tools/ci/tool-list.sh "${TOOL}" "${OS}" "${BASH}" >>"${GITHUB_OUTPUT}"
+        env:
+          TOOL: ${{ matrix.tool }}
+          OS: ${{ matrix.container || matrix.os }}
+          BASH: ${{ matrix.bash }}
+      - name: Setup MSYS2 bash
+        run: |
+          printf '%s\n' 'C:\msys64\mingw32\bin' >>"${GITHUB_PATH}"
+          printf '%s\n' 'C:\msys64\usr\bin' >>"${GITHUB_PATH}"
+        if: matrix.bash == 'msys2'
+      - name: Setup Cygwin bash
+        run: |
+          choco install --no-progress --requirechecksums cygwin
+          printf '%s\n' 'C:\tools\cygwin\bin' >>"${GITHUB_PATH}"
+          printf '%s\n' 'C:\tools\cygwin\usr\bin' >>"${GITHUB_PATH}"
+        if: matrix.bash == 'cygwin'
+      # remove bash installed by checkout-action
+      - run: apk --no-cache del bash
+        shell: sh
+        if: startsWith(matrix.container, 'alpine')
+      - uses: ./
+        with:
+          tool: ${{ steps.tool-list.outputs.tool }}
+      # Test all shells listed in https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsshell
+      - name: Test bash
+        run: just --version && shfmt --version && protoc --version && rustc --version && cargo --version && rustup --version
+        shell: bash
+        if: matrix.container == ''
+      - name: Test bash
+        run: just --version && shfmt --version
+        shell: bash
+        # TODO: OCI runtime exec failed: exec failed: unable to start container process: exec: "bash": executable file not found in $PATH: unknown
+        if: matrix.container != '' && !startsWith(matrix.container, 'opensuse')
+      - name: Test sh
+        run: just --version && shfmt --version && protoc --version && rustc --version && cargo --version && rustup --version
+        shell: sh
+        if: matrix.container == ''
+      - name: Test sh
+        run: just --version && shfmt --version
+        shell: sh
+        # TODO: OCI runtime exec failed: exec failed: unable to start container process: exec: "sh": executable file not found in $PATH: unknown
+        if: matrix.container != '' && !startsWith(matrix.container, 'opensuse')
+      - name: Test pwsh
+        run: just --version; shfmt --version; protoc --version; rustc --version; cargo --version; rustup --version
+        shell: pwsh
+        if: matrix.os != 'ubuntu-slim' && matrix.container == ''
+      - name: Test powershell
+        run: just --version; shfmt --version; protoc --version; rustc --version; cargo --version; rustup --version
+        shell: powershell
+        if: startsWith(matrix.os, 'windows')
+      - name: Test cmd
+        run: just --version & shfmt --version & protoc --version & rustc --version & cargo --version & rustup --version
+        shell: cmd # zizmor: ignore[misfeature] used for compatibility testing
+        if: startsWith(matrix.os, 'windows')
+      # We use the version output to check the version of cargo-binstall, but they
+      # several times change the version output format in the past so we need to
+      # check it with CI. (e.g., 0.14.0->0.16.0 update change it
+      # from "cargo-binstall <version>" to "<version>")
+      - run: |
+          if [[ "$(cargo-binstall binstall -V)" != "$(jq -r '.latest.version' manifests/cargo-binstall.json)" ]]; then
+            exit 1
+          fi
+        if: matrix.bash != 'cygwin' && matrix.os != 'windows-11-arm' && !startsWith(matrix.container, 'opensuse')
+
+  test-alias:
+    needs: tidy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
+      # cross attempts to install rust-src when Cargo.toml is available even if `cross --version`
+      - run: rm -- Cargo.toml
+      - run: env
+      - uses: ./
+        with:
+          # NB: Update alias list in tools/ci/release-post-commit.sh, case for aliases in main.sh,
+          # and match for alias for tools/codegen/src/tools-markdown.rs.
+          tool: |
+            nextest
+            taplo-cli
+            typos-cli
+            wasm-bindgen-cli
+            wasmtime-cli
+            wild-linker
+      - name: Test bash
+        run: cargo-nextest nextest --version && taplo --version
+        shell: bash
+      - name: Test sh
+        run: cargo-nextest nextest --version && taplo --version
+        shell: sh
+
+  test-fallback:
+    needs: tidy
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - fallback: none
+          - fallback: cargo-install
+          - fallback: cargo-binstall
+          - fallback: cargo-binstall
+            version: 0.3
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    steps:
+      - uses: taiki-e/checkout-action@7d1e50e93dc4fb3bba58f85018fadf77898aee8b # v1.4.2
+      # cross attempts to install rust-src when Cargo.toml is available even if `cross --version`
+      - run: rm -- Cargo.toml
+      - run: env
+      - uses: ./
+        id: install
+        continue-on-error: ${{ matrix.fallback == 'none' }}
+        with:
+          tool: parse-changelog@${{ matrix.version || '0.4.6' }}
+          fallback: ${{ matrix.fallback }}
+      - run: exit 1
+        if: matrix.fallback == 'none' && steps.install.outcome != 'failure'
+      - name: Test bash
+        run: parse-changelog --version
+        shell: bash
+        if: matrix.fallback != 'none'
+      - name: Test sh
+        run: parse-changelog --version
+        shell: sh
+        if: matrix.fallback != 'none'
