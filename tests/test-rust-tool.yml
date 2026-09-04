@@ -1,0 +1,23 @@
+name: Test Rust tool installation (cargo-nextest)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: cargo-nextest
+          fallback: 'none'
+      - name: Assert cargo-nextest is installed
+        run: |
+          echo "Checking cargo-nextest installation..."
+          if ! command -v cargo-nextest > /dev/null 2>&1; then
+            echo "FAIL: cargo-nextest was not found in PATH"
+            exit 1
+          fi
+          NEXTEST_VERSION=$(cargo-nextest nextest --version)
+          echo "cargo-nextest version: $NEXTEST_VERSION"
+          echo "PASS: cargo-nextest is installed"
