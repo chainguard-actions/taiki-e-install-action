@@ -1,0 +1,21 @@
+name: Test Rust tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: cargo-nextest
+      - name: Assert cargo-nextest is installed
+        run: |
+          echo "Checking cargo-nextest installation..."
+          if ! command -v cargo-nextest > /dev/null 2>&1; then
+            echo "FAIL: cargo-nextest is not installed"
+            exit 1
+          fi
+          echo "cargo-nextest version: $(cargo-nextest nextest --version)"
+          echo "PASS: cargo-nextest is installed"
