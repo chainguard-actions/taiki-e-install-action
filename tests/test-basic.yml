@@ -1,0 +1,23 @@
+name: Test basic tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install shfmt
+        id: action
+        uses: .
+        with:
+          tool: shfmt
+      - name: Assert shfmt is installed and functional
+        run: |
+          echo "Checking shfmt installation..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt command not found"
+            exit 1
+          fi
+          VERSION=$(shfmt --version)
+          echo "shfmt version: $VERSION"
+          echo "PASS: shfmt is installed"

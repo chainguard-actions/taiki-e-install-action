@@ -1,0 +1,28 @@
+name: Test specific version installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install specific version of shfmt
+        id: action
+        uses: .
+        with:
+          tool: shfmt@3.14.1
+      - name: Assert shfmt version matches
+        run: |
+          echo "Checking shfmt version..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt command not found"
+            exit 1
+          fi
+          VERSION=$(shfmt --version)
+          echo "shfmt version output: $VERSION"
+          if echo "$VERSION" | grep -q "3.14.1"; then
+            echo "PASS: shfmt 3.14.1 is installed"
+          else
+            echo "FAIL: expected version 3.14.1, got: $VERSION"
+            exit 1
+          fi
