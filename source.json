@@ -1,6 +1,11 @@
 {
   "owner": "taiki-e",
   "repo": "install-action",
-  "version": "",
-  "url": "https://github.com/taiki-e/install-action"
+  "version": "v2.87.20",
+  "commit_sha": "9983c65e42da123ff25d1f78505eb6de315aa172",
+  "url": "https://github.com/taiki-e/install-action",
+  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "2",
+  "harden_agent_version": "2"
 }
