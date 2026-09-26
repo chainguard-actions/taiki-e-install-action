@@ -1,0 +1,33 @@
+name: Test versioned tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install specific version of shfmt
+        id: action
+        uses: .
+        with:
+          tool: shfmt@3.14.1
+          fallback: none
+      - name: Assert shfmt is installed with correct version
+        run: |
+          echo "Checking shfmt installation..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found in PATH"
+            exit 1
+          fi
+          VERSION=$(shfmt --version 2>&1)
+          echo "shfmt version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: shfmt --version returned empty"
+            exit 1
+          fi
+          if echo "$VERSION" | grep -qF "3.14.1"; then
+            echo "PASS: shfmt 3.14.1 is installed"
+          else
+            echo "FAIL: expected version 3.14.1 but got: $VERSION"
+            exit 1
+          fi
