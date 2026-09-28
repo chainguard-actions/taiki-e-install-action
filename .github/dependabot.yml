@@ -1,0 +1,19 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: ''
+    ignore:
+      # https://github.com/taiki-e/install-action/pull/831#issuecomment-2650284580
+      - dependency-name: ureq
+    labels: []
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: ''
+    labels: []

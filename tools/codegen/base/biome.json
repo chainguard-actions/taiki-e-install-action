@@ -1,0 +1,33 @@
+{
+  "repository": "https://github.com/biomejs/biome",
+  "website": "https://biomejs.dev",
+  "license_markdown": "[Apache-2.0](https://github.com/biomejs/biome/blob/main/LICENSE-APACHE) OR [MIT](https://github.com/biomejs/biome/blob/main/LICENSE-MIT)",
+  "tag_prefix": "cli/v",
+  "bin": "${package}${exe}",
+  "platform": {
+    "x86_64_linux_gnu": {
+      "asset_name": "${package}-linux-x64"
+    },
+    "x86_64_linux_musl": {
+      "asset_name": "${package}-linux-x64-musl"
+    },
+    "x86_64_macos": {
+      "asset_name": "${package}-darwin-x64"
+    },
+    "x86_64_windows": {
+      "asset_name": "${package}-win32-x64${exe}"
+    },
+    "aarch64_linux_gnu": {
+      "asset_name": "${package}-linux-arm64"
+    },
+    "aarch64_linux_musl": {
+      "asset_name": "${package}-linux-arm64-musl"
+    },
+    "aarch64_macos": {
+      "asset_name": "${package}-darwin-arm64"
+    },
+    "aarch64_windows": {
+      "asset_name": "${package}-win32-arm64${exe}"
+    }
+  }
+}
