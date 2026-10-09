@@ -1,0 +1,33 @@
+name: Test tool installation with checksum disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install shfmt with checksum disabled
+        id: install
+        uses: .
+        with:
+          tool: shfmt
+          checksum: 'false'
+      - name: Assert shfmt is installed even without checksum
+        run: |
+          # shfmt has rust_crate: null so it always installs to ~/.install-action/bin
+          export PATH="$PATH:$HOME/.install-action/bin:$HOME/.cargo/bin"
+          echo "PATH=$PATH"
+          echo "Checking install-action bin dir..."
+          ls -la "$HOME/.install-action/bin/" 2>/dev/null || echo "(install-action bin dir not found)"
+          echo "Checking shfmt is available..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found in PATH"
+            exit 1
+          fi
+          VERSION=$(shfmt --version 2>&1)
+          echo "shfmt version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: shfmt --version returned empty"
+            exit 1
+          fi
+          echo "PASS: shfmt installed without checksum verification"

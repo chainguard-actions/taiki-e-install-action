@@ -1,0 +1,34 @@
+name: Test versioned tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install specific version of shfmt
+        id: install
+        uses: .
+        with:
+          tool: shfmt@3.14.0
+      - name: Assert shfmt 3.14.0 is installed
+        run: |
+          # shfmt has rust_crate: null so it always installs to ~/.install-action/bin
+          export PATH="$PATH:$HOME/.install-action/bin:$HOME/.cargo/bin"
+          echo "Checking install-action bin dir..."
+          ls -la "$HOME/.install-action/bin/" 2>/dev/null || echo "(install-action bin dir not found)"
+          echo "Checking shfmt is available..."
+          if ! command -v shfmt > /dev/null 2>&1; then
+            echo "FAIL: shfmt not found in PATH"
+            exit 1
+          fi
+          RAW_VERSION=$(shfmt --version 2>&1)
+          echo "shfmt raw version: $RAW_VERSION"
+          # shfmt --version outputs "v3.14.0", strip the leading 'v'
+          VERSION="${RAW_VERSION#v}"
+          echo "shfmt version (stripped): $VERSION"
+          if [ "$VERSION" != "3.14.0" ]; then
+            echo "FAIL: expected 3.14.0 but got '$VERSION'"
+            exit 1
+          fi
+          echo "PASS: shfmt 3.14.0 is installed"
