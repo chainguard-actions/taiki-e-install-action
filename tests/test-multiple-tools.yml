@@ -1,0 +1,33 @@
+name: Test multiple tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install multiple tools via install-action
+        id: action
+        uses: .
+        with:
+          tool: ripgrep, cargo-nextest
+      - name: Assert ripgrep is installed
+        run: |
+          echo "Checking ripgrep installation..."
+          if ! command -v rg > /dev/null 2>&1; then
+            echo "FAIL: rg (ripgrep) not found in PATH"
+            exit 1
+          fi
+          RG_VERSION=$(rg --version 2>&1 | head -1)
+          echo "rg version: $RG_VERSION"
+          echo "PASS: ripgrep is installed"
+      - name: Assert cargo-nextest is installed
+        run: |
+          echo "Checking cargo-nextest installation..."
+          if ! command -v cargo-nextest > /dev/null 2>&1; then
+            echo "FAIL: cargo-nextest not found in PATH"
+            exit 1
+          fi
+          NEXTEST_VERSION=$(cargo-nextest --version 2>&1 | head -1)
+          echo "cargo-nextest version: $NEXTEST_VERSION"
+          echo "PASS: cargo-nextest is installed"

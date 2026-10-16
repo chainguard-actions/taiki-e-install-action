@@ -1,0 +1,28 @@
+name: Test versioned tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install specific version of ripgrep
+        id: action
+        uses: .
+        with:
+          tool: ripgrep@14.1.1
+      - name: Assert ripgrep version matches expected
+        run: |
+          echo "Checking ripgrep version..."
+          if ! command -v rg > /dev/null 2>&1; then
+            echo "FAIL: rg (ripgrep) not found in PATH"
+            exit 1
+          fi
+          RG_VERSION=$(rg --version 2>&1 | head -1)
+          echo "rg version: $RG_VERSION"
+          if echo "$RG_VERSION" | grep -q "14.1.1"; then
+            echo "PASS: ripgrep 14.1.1 is installed"
+          else
+            echo "FAIL: expected ripgrep 14.1.1 but got: $RG_VERSION"
+            exit 1
+          fi

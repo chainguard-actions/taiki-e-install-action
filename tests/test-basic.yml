@@ -1,0 +1,27 @@
+name: Test basic tool installation
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install ripgrep via install-action
+        id: action
+        uses: .
+        with:
+          tool: ripgrep
+      - name: Assert ripgrep is installed and executable
+        run: |
+          echo "Checking ripgrep installation..."
+          if ! command -v rg > /dev/null 2>&1; then
+            echo "FAIL: rg (ripgrep) not found in PATH"
+            exit 1
+          fi
+          RG_VERSION=$(rg --version 2>&1 | head -1)
+          echo "rg version: $RG_VERSION"
+          if [ -z "$RG_VERSION" ]; then
+            echo "FAIL: rg --version returned empty"
+            exit 1
+          fi
+          echo "PASS: ripgrep is installed"
