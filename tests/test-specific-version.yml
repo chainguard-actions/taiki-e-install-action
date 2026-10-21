@@ -1,0 +1,25 @@
+name: Test installing a specific tool version
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: shfmt@3.14.0
+      - name: Assert shfmt 3.14.0 is installed
+        run: |
+          if ! command -v shfmt >/dev/null; then
+            echo "FAIL: shfmt not found in PATH"
+            exit 1
+          fi
+          VERSION="$(shfmt --version)"
+          echo "version: $VERSION"
+          if ! echo "$VERSION" | grep -q '3\.14\.0'; then
+            echo "FAIL: expected shfmt 3.14.0"
+            exit 1
+          fi
+          echo "PASS"

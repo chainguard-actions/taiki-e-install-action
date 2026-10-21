@@ -1,0 +1,30 @@
+name: Test basic usage (install latest shfmt)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: shfmt
+      - name: Assert shfmt is installed and on PATH
+        run: |
+          if ! command -v shfmt >/dev/null; then
+            echo "FAIL: shfmt not found in PATH ($PATH)"
+            exit 1
+          fi
+          echo "shfmt at: $(command -v shfmt)"
+          VERSION="$(shfmt --version)"
+          echo "version: $VERSION"
+          if ! echo "$VERSION" | grep -q '3\.14\.1'; then
+            echo "FAIL: expected shfmt 3.14.1 (latest in manifest)"
+            exit 1
+          fi
+          if [ ! -x "$HOME/.install-action/bin/shfmt" ]; then
+            echo "FAIL: expected shfmt in \$HOME/.install-action/bin"
+            exit 1
+          fi
+          echo "PASS"

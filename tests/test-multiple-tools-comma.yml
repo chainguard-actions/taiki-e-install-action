@@ -1,0 +1,29 @@
+name: Test multiple tools (comma separated)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: shfmt , just@1.59.0
+      - name: Assert both tools are installed
+        run: |
+          for t in shfmt just; do
+            if ! command -v "$t" >/dev/null; then
+              echo "FAIL: $t not found in PATH ($PATH)"
+              exit 1
+            fi
+            echo "$t at: $(command -v "$t")"
+          done
+          JV="$(just --version)"
+          echo "just version: $JV"
+          if ! echo "$JV" | grep -q '1\.59\.0'; then
+            echo "FAIL: expected just 1.59.0"
+            exit 1
+          fi
+          shfmt --version
+          echo "PASS"
