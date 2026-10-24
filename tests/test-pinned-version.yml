@@ -1,0 +1,22 @@
+name: Test pinned version install
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: just@1.59.0
+          fallback: none
+      - name: Assert exact version installed
+        run: |
+          out="$(just --version)"
+          echo "version output: $out"
+          if [ "$out" != "just 1.59.0" ]; then
+            echo "FAIL: expected 'just 1.59.0'"
+            exit 1
+          fi
+          echo "PASS"
