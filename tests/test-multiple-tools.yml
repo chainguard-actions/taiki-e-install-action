@@ -1,0 +1,25 @@
+name: Test multiple tools (comma separated)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: just , typos
+          fallback: none
+      - name: Assert both tools installed
+        run: |
+          for t in just typos; do
+            p="$(command -v "$t" || true)"
+            echo "$t: $p"
+            if [ -z "$p" ]; then
+              echo "FAIL: $t not found in PATH"
+              exit 1
+            fi
+            "$t" --version
+          done
+          echo "PASS"

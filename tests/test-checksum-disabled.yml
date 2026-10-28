@@ -1,0 +1,22 @@
+name: Test checksum disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: just
+          checksum: 'false'
+          fallback: none
+      - name: Assert just installed
+        run: |
+          out="$(just --version || true)"
+          echo "version output: $out"
+          case "$out" in
+            just\ *) echo "PASS" ;;
+            *) echo "FAIL: just not installed"; exit 1 ;;
+          esac
