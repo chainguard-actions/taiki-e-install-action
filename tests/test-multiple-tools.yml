@@ -1,0 +1,29 @@
+name: Test installing multiple tools
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: just@1.59.0, shfmt
+          fallback: none
+      - name: Assert both tools are installed
+        run: |
+          for t in just shfmt; do
+            if ! command -v "$t" >/dev/null; then
+              echo "FAIL: $t not found on PATH ($PATH)"
+              exit 1
+            fi
+            echo "$t -> $(command -v "$t")"
+          done
+          just --version
+          shfmt --version
+          case "$(just --version)" in
+            *1.59.0*) ;;
+            *) echo "FAIL: expected just 1.59.0"; exit 1 ;;
+          esac
+          echo "PASS"

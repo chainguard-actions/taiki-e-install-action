@@ -1,0 +1,26 @@
+name: Test install with checksum disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: just@1.59.0
+          checksum: 'false'
+          fallback: none
+      - name: Assert just is installed
+        run: |
+          if ! command -v just >/dev/null; then
+            echo "FAIL: just not found on PATH"
+            exit 1
+          fi
+          ACTUAL="$(just --version)"
+          echo "actual: $ACTUAL"
+          case "$ACTUAL" in
+            *1.59.0*) echo "PASS" ;;
+            *) echo "FAIL: expected version 1.59.0"; exit 1 ;;
+          esac
