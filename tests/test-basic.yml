@@ -1,0 +1,28 @@
+name: Test basic usage (install just)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: just
+          fallback: none
+      - name: Assert just is installed and runnable
+        run: |
+          path="$(command -v just || true)"
+          echo "just path: $path"
+          if [ -z "$path" ]; then
+            echo "FAIL: just not found on PATH"
+            exit 1
+          fi
+          out="$(just --version)"
+          echo "version output: $out"
+          if ! echo "$out" | grep -qE '^just [0-9]+\.[0-9]+'; then
+            echo "FAIL: unexpected just --version output"
+            exit 1
+          fi
+          echo "PASS"

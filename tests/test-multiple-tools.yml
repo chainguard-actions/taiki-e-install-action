@@ -1,0 +1,30 @@
+name: Test multiple tools (comma and whitespace separated)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: "just, shfmt@3.13"
+          fallback: none
+      - name: Assert both tools installed
+        run: |
+          for t in just shfmt; do
+            if ! command -v "$t" >/dev/null; then
+              echo "FAIL: $t not found on PATH"
+              exit 1
+            fi
+            echo "$t: $(command -v "$t")"
+          done
+          out="$(shfmt --version)"
+          echo "shfmt version: $out"
+          case "$out" in
+            v3.13.*|3.13.*) ;;
+            *) echo "FAIL: expected shfmt 3.13.x"; exit 1 ;;
+          esac
+          just --version
+          echo "PASS"
