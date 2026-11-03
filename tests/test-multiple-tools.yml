@@ -1,0 +1,33 @@
+name: Test multiple tools (comma separated)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: just , shfmt@3.14.1
+          fallback: none
+      - name: Assert both tools installed
+        run: |
+          for t in just shfmt; do
+            if ! command -v "$t" >/dev/null 2>&1; then
+              echo "FAIL: $t not found on PATH"
+              exit 1
+            fi
+            echo "$t found at $(command -v "$t")"
+          done
+          V="$(shfmt --version)"
+          echo "shfmt --version: $V"
+          case "$V" in
+            *3.14.1*) ;;
+            *) echo "FAIL: expected shfmt 3.14.1"; exit 1 ;;
+          esac
+          if [ ! -x "$HOME/.install-action/bin/shfmt" ]; then
+            echo "FAIL: shfmt not in \$HOME/.install-action/bin"
+            exit 1
+          fi
+          echo "PASS"

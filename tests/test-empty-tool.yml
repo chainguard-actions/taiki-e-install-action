@@ -1,0 +1,27 @@
+name: Test empty tool input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: ''
+      - name: Assert action succeeded without installing
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "outcome: $OUTCOME"
+          if [ "$OUTCOME" != "success" ]; then
+            echo "FAIL: expected success for empty tool input"
+            exit 1
+          fi
+          if [ -d "$HOME/.install-action/bin" ] && [ -n "$(ls -A "$HOME/.install-action/bin")" ]; then
+            echo "FAIL: something was installed unexpectedly"
+            ls -la "$HOME/.install-action/bin"
+            exit 1
+          fi
+          echo "PASS"
