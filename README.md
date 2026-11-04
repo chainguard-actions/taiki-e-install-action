@@ -103,6 +103,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | v2.89.0 | [`v2.89.0`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.89.0) | [`1919c4a`](https://github.com/taiki-e/install-action/commit/1919c4a95903d2c33e4a221102edca87309fc14b) | [`HARDENING.md`](https://github.com/chainguard-actions/taiki-e-install-action/blob/v2.89.0/HARDENING.md) |
 | v2.89.1 | [`v2.89.1`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.89.1) | [`682ce6c`](https://github.com/taiki-e/install-action/commit/682ce6c3c696a4cd5168a05f98e51aa02b877941) | [`HARDENING.md`](https://github.com/chainguard-actions/taiki-e-install-action/blob/v2.89.1/HARDENING.md) |
 | v2.90.0 | [`v2.90.0`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.90.0) | [`b80e2bb`](https://github.com/taiki-e/install-action/commit/b80e2bb2635f28eb98b9fce1e2f0887e1535c6b2) | [`HARDENING.md`](https://github.com/chainguard-actions/taiki-e-install-action/blob/v2.90.0/HARDENING.md) |
+| v2.90.1 | [`v2.90.1`](https://github.com/chainguard-actions/taiki-e-install-action/tree/v2.90.1) | [`c509219`](https://github.com/taiki-e/install-action/commit/c509219cf42fba86913069efd0ade2458c59337b) | [`HARDENING.md`](https://github.com/chainguard-actions/taiki-e-install-action/blob/v2.90.1/HARDENING.md) |
 
 ## Privacy
 
