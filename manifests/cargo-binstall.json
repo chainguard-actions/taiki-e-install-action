@@ -1,0 +1,59 @@
+{
+  "rust_crate": "cargo-binstall",
+  "template": {
+    "x86_64_linux_musl": {
+      "url": "https://github.com/cargo-bins/cargo-binstall/releases/download/v${version}/cargo-binstall-x86_64-unknown-linux-musl.tgz"
+    },
+    "x86_64_macos": {
+      "url": "https://github.com/cargo-bins/cargo-binstall/releases/download/v${version}/cargo-binstall-x86_64-apple-darwin.zip"
+    },
+    "x86_64_windows": {
+      "url": "https://github.com/cargo-bins/cargo-binstall/releases/download/v${version}/cargo-binstall-x86_64-pc-windows-msvc.zip"
+    },
+    "aarch64_linux_musl": {
+      "url": "https://github.com/cargo-bins/cargo-binstall/releases/download/v${version}/cargo-binstall-aarch64-unknown-linux-musl.tgz"
+    },
+    "aarch64_macos": {
+      "url": "https://github.com/cargo-bins/cargo-binstall/releases/download/v${version}/cargo-binstall-aarch64-apple-darwin.zip"
+    },
+    "aarch64_windows": {
+      "url": "https://github.com/cargo-bins/cargo-binstall/releases/download/v${version}/cargo-binstall-aarch64-pc-windows-msvc.zip"
+    },
+    "riscv64_linux_musl": {
+      "url": "https://github.com/cargo-bins/cargo-binstall/releases/download/v${version}/cargo-binstall-riscv64gc-unknown-linux-musl.tgz"
+    }
+  },
+  "latest": {
+    "version": "1.27.0"
+  },
+  "1.27.0": {
+    "x86_64_linux_musl": {
+      "etag": "0x8DF3FD93D6A057B",
+      "hash": "b2e4b70fcddc5bd6fd90c5cf8dc17b4cf0ea54a3db16c65ee0307f42c9bd3187"
+    },
+    "x86_64_macos": {
+      "etag": "0x8DF3FD945683218",
+      "hash": "1bb92ce2e92b32db64c4f4f9c29c836991ff7b37bf4be1f227334f596c287b1b"
+    },
+    "x86_64_windows": {
+      "etag": "0x8DF3FD94243A618",
+      "hash": "624ae880d18eb0ee8c7934982e52b2aca23998cb87a01b1e59223083b6ee5dae"
+    },
+    "aarch64_linux_musl": {
+      "etag": "0x8DF3FD952504C24",
+      "hash": "84f2afefd325e52c92702a1f2a396902301ccdafd7614270cbbf46b9cff3accf"
+    },
+    "aarch64_macos": {
+      "etag": "0x8DF3FD95A825F71",
+      "hash": "69cfe1156ad39e91f4e6802db1ce1e2f02ac926452d6c20fd14a328c68f676c8"
+    },
+    "aarch64_windows": {
+      "etag": "0x8DF3FD957D25EA2",
+      "hash": "3cdd0c7d17625c59c1eff9ca9db1d34c8582fc2eacf14ee524572f8f1a039b1f"
+    },
+    "riscv64_linux_musl": {
+      "etag": "0x8DF3FD94A91E11A",
+      "hash": "ebe95b38203ed148ca199f7a6fbddec2ab2b4dc7ffd9d66b1213efc2789326ba"
+    }
+  }
+}

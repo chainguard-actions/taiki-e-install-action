@@ -1,0 +1,36 @@
+name: Test multiple tools (comma and space separated)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: "parse-changelog@0.6, shfmt"
+          fallback: none
+      - name: Assert both tools installed
+        run: |
+          for t in parse-changelog shfmt; do
+            p="$(command -v "$t" || true)"
+            echo "$t: $p"
+            if [ -z "$p" ]; then
+              echo "FAIL: $t not found on PATH"
+              exit 1
+            fi
+          done
+          pc="$(parse-changelog --version)"
+          echo "parse-changelog: $pc"
+          case "$pc" in
+            "parse-changelog 0.6."*) ;;
+            *) echo "FAIL: expected parse-changelog 0.6.x"; exit 1 ;;
+          esac
+          sv="$(shfmt --version)"
+          echo "shfmt: $sv"
+          if [ -z "$sv" ]; then
+            echo "FAIL: shfmt --version produced no output"
+            exit 1
+          fi
+          echo "PASS"
