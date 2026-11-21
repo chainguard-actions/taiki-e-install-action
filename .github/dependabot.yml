@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 14 # Note: Unless dependencies are pinned/locked, the effect is limited.
+    commit-message:
+      prefix: ''
+    ignore:
+      # https://github.com/taiki-e/install-action/pull/831#issuecomment-2650284580
+      - dependency-name: ureq
+    labels: []
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 14
+    commit-message:
+      prefix: ''
+    labels: []
