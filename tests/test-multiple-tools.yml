@@ -1,0 +1,24 @@
+name: Test multiple tools (comma and space separated)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: shfmt, just
+      - name: Assert both tools installed
+        run: |
+          for t in shfmt just; do
+            if ! command -v "$t" >/dev/null; then
+              echo "FAIL: $t not found in PATH"
+              exit 1
+            fi
+            echo "$t: $(command -v "$t")"
+          done
+          shfmt --version
+          just --version
+          echo "PASS"
