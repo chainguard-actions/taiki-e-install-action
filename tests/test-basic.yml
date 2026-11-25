@@ -1,0 +1,36 @@
+name: Test basic install (latest shfmt)
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: shfmt
+      - name: Assert shfmt installed and on PATH
+        run: |
+          if ! command -v shfmt >/dev/null; then
+            echo "FAIL: shfmt not found in PATH"
+            echo "PATH=$PATH"
+            exit 1
+          fi
+          echo "shfmt at: $(command -v shfmt)"
+          VERSION="$(shfmt --version)"
+          echo "version: $VERSION"
+          if [ -z "$VERSION" ]; then
+            echo "FAIL: empty version output"
+            exit 1
+          fi
+          echo "PASS"
+      - name: Assert shfmt works
+        run: |
+          printf 'if true;then\necho hi\nfi\n' | shfmt > out.sh
+          cat out.sh
+          if ! grep -q '^if true; then$' out.sh; then
+            echo "FAIL: shfmt did not format as expected"
+            exit 1
+          fi
+          echo "PASS"

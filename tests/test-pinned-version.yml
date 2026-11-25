@@ -1,0 +1,25 @@
+name: Test pinned version install
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          tool: shfmt@3.10.0
+          fallback: none
+      - name: Assert exact version installed
+        run: |
+          if ! command -v shfmt >/dev/null; then
+            echo "FAIL: shfmt not found in PATH"
+            exit 1
+          fi
+          VERSION="$(shfmt --version)"
+          echo "version: $VERSION"
+          case "$VERSION" in
+            *3.10.0*) echo "PASS" ;;
+            *) echo "FAIL: expected version 3.10.0"; exit 1 ;;
+          esac
